@@ -32,7 +32,7 @@ class MakeRoom : Activity() {
         val save: Button = findViewById(R.id.save)
         save.setOnClickListener {
             saveData()
-            val intent = Intent(this, kotlin.collections.Map::class.java)
+            val intent = Intent(this, Map::class.java)
             val myCode : String = MakeRoom().generateRandomString(8)
             intent.putExtra("myCode", myCode)
             intent.putExtra("roomCode", roomcode)

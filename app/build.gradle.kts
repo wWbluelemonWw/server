@@ -57,4 +57,7 @@ dependencies {
     //WebSocket
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+
+    //UI
+    implementation("info.hoang8f:fbutton:1.0.5")
 }

@@ -31,6 +31,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import android.os.Handler
 import android.widget.TextView
 
+
 class Map : Activity() {
     private var mMapView: TMapView? = null
     private var mContext: Context? = null
