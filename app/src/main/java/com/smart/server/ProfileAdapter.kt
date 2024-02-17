@@ -13,8 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 //class ProfileAdapter(val profileList: ArrayList<Profiles>) : RecyclerView.Adapter<ProfileAdapter.CustomViewHolder>(){
 class ProfileAdapter(
     val profileList: ArrayList<Profiles>,
-    private val context: Context,
-    private val mDelayHandler: Handler
+    private val context: Context
 ) : RecyclerView.Adapter<ProfileAdapter.CustomViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
@@ -35,7 +34,6 @@ class ProfileAdapter(
 
         init {
             goButton.setOnClickListener {
-                mDelayHandler.removeCallbacksAndMessages(null)
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
                     val profile = profileList[position]

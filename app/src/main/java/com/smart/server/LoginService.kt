@@ -51,7 +51,7 @@ interface MakeRoomService{
         @Field("subtitle") subtitle: String,
         @Field("person") person: String,
         @Field("region") region: String,
-        @Field("roomcode") roomcode:String,
+        @Field("roomCode") roomCode:String,
 
         ) : Call<Rooming> //아웃풋을 정의하는 곳 <OUTPUT>
 }
