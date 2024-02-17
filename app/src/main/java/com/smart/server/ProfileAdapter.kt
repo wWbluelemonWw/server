@@ -69,4 +69,4 @@ class ProfileAdapter(
             .joinToString("")
     }
 
-}efasf
+}
