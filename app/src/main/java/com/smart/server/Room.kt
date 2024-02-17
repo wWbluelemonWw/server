@@ -26,7 +26,7 @@ class Room : Activity() {
 
         re_room = findViewById(R.id.re_room)
         profileList = ArrayList()
-        adapter = ProfileAdapter(profileList, this, mDelayHandler)
+        adapter = ProfileAdapter(profileList, this)
 
         for (i in 1..profileList.size) {
             profileList.add(Profiles(null, null, null, null, null))
@@ -36,23 +36,20 @@ class Room : Activity() {
         re_room.adapter = adapter
 
         val makeroom: Button = findViewById(R.id.makeroom)
-        waitGuest()
+        val set_room: Button = findViewById(R.id.setroom)
+        showGuest()
+
+        set_room.setOnClickListener {
+            // 다음 화면으로 이동하기 위한 인텐트 객체 생성
+            showGuest()
+        }
 
         makeroom.setOnClickListener {
             // 다음 화면으로 이동하기 위한 인텐트 객체 생성
-            mDelayHandler.removeCallbacksAndMessages(null)
             val intent = Intent(this, MakeRoom::class.java)
             startActivity(intent)
         }
 
-    }
-
-   val mDelayHandler: Handler by lazy {
-        Handler()
-    }
-
-    private fun waitGuest(){
-        mDelayHandler.postDelayed(::showGuest, 3000) // 3초 후에 showGuest 함수를 실행한다.
     }
 
     private fun showGuest() {
@@ -76,23 +73,16 @@ class Room : Activity() {
 
                 val size = room.data.size
                     for (i in 0 until size) {
-                        profileList.add(Profiles(room.data[i].title, room.data[i].subtitle, room.data[i].person, room.data[i].region, room.data[i].roomcode))
+                        profileList.add(Profiles(room.data[i].title, room.data[i].subtitle, room.data[i].person, room.data[i].region, room.data[i].roomCode))
                         adapter.notifyDataSetChanged()
                     }
 
                 }
-
-
             override fun onFailure(call: Call<MRoom>, t: Throwable) {
                 Log.d("통신 실패", "실퍠")
             }
         })
 
-        waitGuest() // 코드 실행뒤에 계속해서 반복하도록 작업한다.
-    }
-    override fun onDestroy() {
-        super.onDestroy()
-        mDelayHandler.removeCallbacksAndMessages(null) // Handler의 모든 콜백을 제거하여 반복을 중지합니다.
     }
 
 }

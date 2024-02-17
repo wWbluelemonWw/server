@@ -26,5 +26,5 @@ data class MRoomData(
     var subtitle: String,
     var person: String,
     var region: String,
-    var roomcode: String
+    var roomCode: String
 )

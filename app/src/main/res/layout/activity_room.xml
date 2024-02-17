@@ -28,6 +28,16 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.16000003" />
 
+    <Button
+        android:id="@+id/setroom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="룸리셋"
+        app:layout_constraintBottom_toTopOf="@+id/makeroom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/makeroom"
+        app:layout_constraintTop_toTopOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

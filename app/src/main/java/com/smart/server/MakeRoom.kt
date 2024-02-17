@@ -18,7 +18,7 @@ class MakeRoom : Activity() {
     lateinit var subtitle_num: EditText
     lateinit var person_num: EditText
     lateinit var region_num: EditText
-    lateinit var roomcode: String
+    lateinit var roomCode: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,25 +35,25 @@ class MakeRoom : Activity() {
             val intent = Intent(this, Map::class.java)
             val myCode : String = MakeRoom().generateRandomString(8)
             intent.putExtra("myCode", myCode)
-            intent.putExtra("roomCode", roomcode)
+            intent.putExtra("roomCode", roomCode)
             startActivity(intent)
         }
 
     }
 
     private fun saveData() {
-        roomcode = generateRandomString(8)
+        roomCode = generateRandomString(8)
         var title = title_num.text.toString()
         var subtitle = subtitle_num.text.toString()
-        var preson = person_num.text.toString()
+        var person = person_num.text.toString()
         var region = region_num.text.toString()
 
-        restful(title, subtitle, preson, region, roomcode)
+        restful(title, subtitle, person, region, roomCode)
 
 
     }
 
-    private fun restful(title: String, subtitle: String, preson: String, region: String, roomcode: String) {
+    private fun restful(title: String, subtitle: String, person: String, region: String, roomCode: String) {
         val sharedPreferences: SharedPreferences = getSharedPreferences("pref", 0)
         val IPnum = sharedPreferences.getString("IP_num", "0") ?: "0"
         var retrofit = Retrofit.Builder()
@@ -63,7 +63,7 @@ class MakeRoom : Activity() {
 
         var MakeRoomService = retrofit.create(MakeRoomService::class.java)
 
-        MakeRoomService.requestLogin(title,subtitle,preson,region,roomcode).enqueue(object : Callback<Rooming> {        //Retrofit을 사용해 서버로 요청을 보내고 응답을 처리. (서버에 textId/textPw를 보내고, enqueue로 응답 처리 콜백 정의)
+        MakeRoomService.requestLogin(title,subtitle,person,region,roomCode).enqueue(object : Callback<Rooming> {        //Retrofit을 사용해 서버로 요청을 보내고 응답을 처리. (서버에 textId/textPw를 보내고, enqueue로 응답 처리 콜백 정의)
                 override fun onResponse(call: Call<Rooming>, response: Response<Rooming>) {
                 }
 
