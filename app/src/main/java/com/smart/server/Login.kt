@@ -28,3 +28,8 @@ data class MRoomData(
     var region: String,
     var roomCode: String
 )
+
+data class Get(
+    var data : String,
+    var count : Int
+)

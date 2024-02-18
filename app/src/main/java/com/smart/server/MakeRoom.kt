@@ -11,6 +11,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import kotlin.collections.Map
 
 
 class MakeRoom : Activity() {
@@ -32,11 +33,6 @@ class MakeRoom : Activity() {
         val save: Button = findViewById(R.id.save)
         save.setOnClickListener {
             saveData()
-            val intent = Intent(this, Map::class.java)
-            val myCode : String = MakeRoom().generateRandomString(8)
-            intent.putExtra("myCode", myCode)
-            intent.putExtra("roomCode", roomCode)
-            startActivity(intent)
         }
 
     }
@@ -50,7 +46,13 @@ class MakeRoom : Activity() {
 
         restful(title, subtitle, person, region, roomCode)
 
+        val intent = Intent(this, com.smart.server.Map::class.java)
+        val myCode : String = MakeRoom().generateRandomString(8)
+        intent.putExtra("person", person)
+        intent.putExtra("myCode", myCode)
+        intent.putExtra("roomCode", roomCode)
 
+        startActivity(intent)
     }
 
     private fun restful(title: String, subtitle: String, person: String, region: String, roomCode: String) {

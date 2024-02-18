@@ -3,6 +3,7 @@ package com.smart.server
 import android.Manifest
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.PointF
@@ -30,12 +31,14 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import android.os.Handler
 import android.widget.TextView
+import kotlin.collections.Map
 
 
 class Map : Activity() {
     private var mMapView: TMapView? = null
     private var mContext: Context? = null
     private val REQUEST_LOCATION_PERMISSION = 1
+    private var check = 0
     private lateinit var locationManager: LocationManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -155,10 +158,13 @@ class Map : Activity() {
                         .build()
 
                     var MapService = retrofit.create(MapService::class.java)        //retrofit 객체를 만든 다음 create를 통해 서비스를 올려주면 loginService가 앞에서 정의한 INPUT OUTPUT을 가지고 서버를 호출할 수 있는 서비스 인터페이스가 된다.
+                    val person = intent.getStringExtra("person") ?:""
+                    val roomCode = intent.getStringExtra("roomCode") ?:""
+                    val myCode: String = intent.getStringExtra("myCode") ?: ""
 
                     send.setOnClickListener{
 
-                        MapService.requestLogin(lat, lon).enqueue(object : Callback<Mapping> {     //Retrofit을 사용해 서버로 요청을 보내고 응답을 처리. (서버에 textId/textPw를 보내고, enqueue로 응답 처리 콜백 정의)
+                        MapService.requestLogin(lat, lon, person, roomCode, myCode).enqueue(object : Callback<Mapping> {     //Retrofit을 사용해 서버로 요청을 보내고 응답을 처리. (서버에 textId/textPw를 보내고, enqueue로 응답 처리 콜백 정의)
                             override fun onResponse(call: Call<Mapping>, response: Response<Mapping>) {     //응답값을 response.body로 받아옴
                                 //웹 통신에 성공했을 때 실행. 응답값을 받아옴.
                                 var map = response.body()     //lat, lon
@@ -171,10 +177,10 @@ class Map : Activity() {
 
                             override fun onFailure(call: Call<Mapping>, t: Throwable) {
                                 //웹 통신에 실패했을 때 실행
-                                val dialog = AlertDialog.Builder(this@Map)
-                                dialog.setTitle("실패!")
-                                dialog.setMessage("통신에 실패했습니다.")
-                                dialog.show()
+//                                val dialog = AlertDialog.Builder(this@Map)
+//                                dialog.setTitle("실패!")
+//                                dialog.setMessage("통신에 실패했습니다.")
+//                                dialog.show()
                             }
 
                         })
@@ -224,8 +230,8 @@ class Map : Activity() {
         Handler()
     }
 
-    private fun waitGuest(){
-        mDelayHandler.postDelayed(::showGuest, 3000) // 3초 후에 showGuest 함수를 실행한다.
+    fun waitGuest(){
+        mDelayHandler.postDelayed(::showGuest, 5000) // 5초 후에 showGuest 함수를 실행한다.
     }
 
     private fun showGuest(){
@@ -248,7 +254,13 @@ class Map : Activity() {
                 override fun onResponse(call: Call<Looping>, response: Response<Looping>) {     //응답값을 response.body로 받아옴
                     //웹 통신에 성공했을 때 실행. 응답값을 받아옴.
                     var count = response.body()     //count
-                    member.text = count?.count.toString()
+                    if(count!!.count < 500 || check == 1) {
+                        member.text = count.count.toString()
+                    } else{
+                        val dialog = CustomDialog(this@Map)
+                        dialog.myDig()
+                        check = 1
+                    }
                 }
 
                 override fun onFailure(call: Call<Looping>, t: Throwable) {
@@ -287,5 +299,87 @@ class Map : Activity() {
 
         })
         mDelayHandler.removeCallbacksAndMessages(null)
+    }
+    fun cancelHandler() {
+        val sharedPreferences: SharedPreferences = getSharedPreferences("pref", 0)
+        val IPnum = sharedPreferences.getString("IP_num", "0") ?: "0"
+        // 실제 반복하는 코드를 여기에 적는다
+        val retrofit = Retrofit.Builder()
+            .baseUrl("http://$IPnum:8000")        //(서버주소)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val LoopService = retrofit.create(LoopService::class.java)
+        val roomCode = intent.getStringExtra("roomCode") ?:""
+        val myCode: String = intent.getStringExtra("myCode") ?: ""
+
+        LoopService.requestLogin(1000, roomCode, myCode).enqueue(object :
+            Callback<Looping> {
+            override fun onResponse(call: Call<Looping>, response: Response<Looping>) {
+
+            }
+
+            override fun onFailure(call: Call<Looping>, t: Throwable) {
+                //웹 통신에 실패했을 때 실행
+            }
+
+        })
+        mDelayHandler.removeCallbacksAndMessages(null)
+    }
+    fun cancelGet(){
+        mDelayHandler.removeCallbacksAndMessages(null)
+    }
+    fun getCode() {
+        waitGet()
+    }
+
+    private val DDelayHandler: Handler by lazy {
+        Handler()
+    }
+
+    fun waitGet(){
+        DDelayHandler.postDelayed(::showGet, 5000) // 5초 후에 showGuest 함수를 실행한다.
+    }
+
+    fun showGet(){
+        val sharedPreferences: SharedPreferences = getSharedPreferences("pref", 0)
+        val IPnum = sharedPreferences.getString("IP_num", "0") ?: "0"
+        // 실제 반복하는 코드를 여기에 적는다
+        val retrofit = Retrofit.Builder()
+            .baseUrl("http://$IPnum:8000")        //(서버주소)
+            .addConverterFactory(GsonConverterFactory.create())     //응답값 JSON 데이터를 객체로 변환
+            .build()
+
+        val GetService = retrofit.create(Getservice::class.java)        //retrofit 객체를 만든 다음 create를 통해 서비스를 올려주면 loginService가 앞에서 정의한 INPUT OUTPUT을 가지고 서버를 호출할 수 있는 서비스 인터페이스가 된다.
+        val roomCode = intent.getStringExtra("roomCode")
+        val myCode: String = intent.getStringExtra("myCode") ?: ""
+        val person = intent.getStringExtra("person") ?:""
+
+        if (roomCode != null) {
+            GetService.requestLogin(roomCode, myCode, person).enqueue(object : Callback<Get> {     //Retrofit을 사용해 서버로 요청을 보내고 응답을 처리. (서버에 textId/textPw를 보내고, enqueue로 응답 처리 콜백 정의)
+                override fun onResponse(call: Call<Get>, response: Response<Get>) {     //응답값을 response.body로 받아옴
+                    val get = response.body()       //data, count
+                    val count = get?.count ?: ""
+                    val dialogView = layoutInflater.inflate(R.layout.activity_dialog, null)
+                    val AP_num: EditText = dialogView.findViewById(R.id.AP_num)
+
+                    AP_num.setText(count.toString())
+
+                    if (get?.data.toString() != "1") {
+                        val dialog =
+                            AlertDialog.Builder(this@Map)        //대괄호 안에 있어서 this@MainActivity 사용
+                        dialog.setTitle("알림!")
+                        dialog.setMessage("결과 =" + get)
+                        dialog.show()
+                    }
+                }
+
+
+                override fun onFailure(call: Call<Get>, t: Throwable) {
+                }
+
+            })
+        }
+        waitGet() // 코드 실행뒤에 계속해서 반복하도록 작업한다.
     }
 }

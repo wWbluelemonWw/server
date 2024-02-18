@@ -37,11 +37,11 @@ class ProfileAdapter(
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
                     val profile = profileList[position]
-                    val roomCode = profile.roomcode
                     val intent = Intent(itemView.context, Map::class.java)
                     val myCode : String = MakeRoom().generateRandomString(8)
+                    intent.putExtra("person", profile.personname)
                     intent.putExtra("myCode", myCode)
-                    intent.putExtra("roomCode", roomCode)
+                    intent.putExtra("roomCode", profile.roomCode)
                     itemView.context.startActivity(intent)
                 }
             }
