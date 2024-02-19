@@ -46,7 +46,7 @@ class MakeRoom : Activity() {
 
         restful(title, subtitle, person, region, roomCode)
 
-        val intent = Intent(this, com.smart.server.Map::class.java)
+        val intent = Intent(this, Map::class.java)
         val myCode : String = MakeRoom().generateRandomString(8)
         intent.putExtra("person", person)
         intent.putExtra("myCode", myCode)

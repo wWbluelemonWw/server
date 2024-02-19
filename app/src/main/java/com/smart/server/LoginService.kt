@@ -24,7 +24,7 @@ interface MapService{
     @POST("/app_map/")           //이게 어떤 통신인지 설명해줘야 함 ("루트 url 다음에 있는 url 입력)
     fun requestLogin(
         //인풋을 정의하는 곳
-        @Field("lat") lat:Double,     //INPUT 만들기 주의! 이름 userid가 서버에서 POST로 받는 이름과 같아야함
+        @Field("lat") lat:String,     //INPUT 만들기 주의! 이름 userid가 서버에서 POST로 받는 이름과 같아야함
         @Field("lon") lon:Double,
         @Field("person") person: String,
         @Field("roomCode") roomCode:String,

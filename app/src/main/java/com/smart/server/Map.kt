@@ -3,9 +3,10 @@ package com.smart.server
 import android.Manifest
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.PointF
 import android.location.LocationManager
 import android.os.Bundle
@@ -31,7 +32,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import android.os.Handler
 import android.widget.TextView
-import kotlin.collections.Map
+import androidx.constraintlayout.widget.ConstraintLayout
 
 
 class Map : Activity() {
@@ -39,19 +40,33 @@ class Map : Activity() {
     private var mContext: Context? = null
     private val REQUEST_LOCATION_PERMISSION = 1
     private var check = 0
+    private var point_count = 0
     private lateinit var locationManager: LocationManager
+    private val markerPoints = mutableListOf<TMapPoint>()
+    private lateinit var mapContainer: LinearLayout
+
+    fun resizeBitmap(bitmap: Bitmap, width: Int, height: Int): Bitmap {
+        return Bitmap.createScaledBitmap(bitmap, width, height, false)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
 
+        initializeMapView()
         waitGuest()
 
         mContext = this
-
-        var address: EditText = findViewById(R.id.address)
         var result: EditText = findViewById(R.id.result)
+        var address: EditText = findViewById(R.id.address)
         var research: Button = findViewById(R.id.research)
+        val locCurrent = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+        val curLat: Double = locCurrent?.latitude ?: 0.0
+        val curLon: Double = locCurrent?.longitude ?: 0.0
+        val route: Button = findViewById(R.id.route)
+        val re_set: Button = findViewById(R.id.re_set)
+
+
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         if (ContextCompat.checkSelfPermission(
                 this,
@@ -69,23 +84,28 @@ class Map : Activity() {
             getLocation()
         }
 
-        val locCurrent = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-
-        val curLat: Double = locCurrent?.latitude ?: 0.0
-        val curLon: Double = locCurrent?.longitude ?: 0.0
-        val send: Button = findViewById(R.id.send)
-
-        // 지도 생성하기
-        val mMainRelativeLayout = findViewById<View>(R.id.mapview_layout) as LinearLayout
-        mMapView = TMapView(this)
-        mMainRelativeLayout.addView(mMapView)
-        mMapView!!.setSKTMapApiKey(mApiKey)
-        mMapView!!.zoomLevel = 14
-        mMapView!!.setCenterPoint(curLon, curLat)
+//        // 지도 생성하기
+//        val mMainRelativeLayout = findViewById<View>(R.id.mapview_layout) as LinearLayout
+//        mMapView = TMapView(this)
+//        mMainRelativeLayout.addView(mMapView)
+//        mMapView!!.setSKTMapApiKey(mApiKey)
+//        mMapView!!.zoomLevel = 14
+//        mMapView!!.setCenterPoint(curLon, curLat)
 
         val tmapdata = TMapData()
 
-        research.setOnClickListener{
+        route.setOnClickListener {
+            Log.d("경로 안내", "Calculate route button clicked.")
+            calculateRoute()
+        }
+
+        re_set.setOnClickListener {
+            Log.d("초기화", "Reset button clicked.")
+            // Perform reset actions...
+            initializeMapView() // Ensure this re-adds the map view and reconfigures listeners
+        }
+
+        research.setOnClickListener {
             val addressText = address.text?.toString() ?: ""
             val get_result: MutableList<String> = mutableListOf()
             try {
@@ -94,8 +114,23 @@ class Map : Activity() {
                         p0?.let { poiItem ->
                             for (i in 0 until poiItem.size) {
                                 val item = poiItem[i]
-                                Log.d("POI Name: ", "${item.poiName}, " + "Address: ${item.poiAddress.replace("null", "")}, " + "Point: ${item.poiPoint}")
-                                get_result.add("${item.poiName}," +" ${item.poiAddress.replace("null", "")} \n\n ")
+                                Log.d(
+                                    "POI Name: ",
+                                    "${item.poiName}, " + "Address: ${
+                                        item.poiAddress.replace(
+                                            "null",
+                                            ""
+                                        )
+                                    }, " + "Point: ${item.poiPoint}"
+                                )
+                                get_result.add(
+                                    "${item.poiName}," + " ${
+                                        item.poiAddress.replace(
+                                            "null",
+                                            ""
+                                        )
+                                    } \n\n "
+                                )
                             }
                             val resultText = get_result.joinToString(separator = "")
                             result.setText(resultText)
@@ -124,86 +159,9 @@ class Map : Activity() {
 //        }
 //    }
 //}
+        setupMapListeners(mMapView!!)
 
-        // 클릭 이벤트 설정
-        mMapView!!.setOnClickListenerCallBack(object : OnClickListenerCallback {
-            override fun onPressEvent(
-                p0: ArrayList<TMapMarkerItem?>?,
-                p1: ArrayList<TMapPOIItem?>?,
-                p2: TMapPoint?,
-                p3: PointF?
-            ): Boolean {
-                try {
-                    val sharedPreferences: SharedPreferences = getSharedPreferences("pref", 0)
-                    val IPnum = sharedPreferences.getString("IP_num", "0") ?: "0"
-                    var lat: Double = p2?.latitude ?: 0.0
-                    var lon: Double = p2?.longitude ?: 0.0
-                    Log.d("MyApp", "선택한 위치의 주소는 " + lat + "\n"+lon)
-
-                    fun addMarker(latitude: Double, longitude: Double) {
-                        val markerItem = TMapMarkerItem()
-                        val tMapPoint = TMapPoint(latitude, longitude)
-
-                        markerItem.setPosition(0.5f, 1.0f)
-                        markerItem.tMapPoint = tMapPoint
-                        markerItem.name = "마커"
-                        mMapView?.addMarkerItem("markerItem", markerItem)
-                    }
-                    addMarker(lat, lon)
-                    result.setText("위도: " + "$lat" + "\n경도: " + "$lon")
-
-                    var retrofit = Retrofit.Builder()
-                        .baseUrl("http://$IPnum:8000")        //(서버주소)
-                        .addConverterFactory(GsonConverterFactory.create())     //응답값 JSON 데이터를 객체로 변환
-                        .build()
-
-                    var MapService = retrofit.create(MapService::class.java)        //retrofit 객체를 만든 다음 create를 통해 서비스를 올려주면 loginService가 앞에서 정의한 INPUT OUTPUT을 가지고 서버를 호출할 수 있는 서비스 인터페이스가 된다.
-                    val person = intent.getStringExtra("person") ?:""
-                    val roomCode = intent.getStringExtra("roomCode") ?:""
-                    val myCode: String = intent.getStringExtra("myCode") ?: ""
-
-                    send.setOnClickListener{
-
-                        MapService.requestLogin(lat, lon, person, roomCode, myCode).enqueue(object : Callback<Mapping> {     //Retrofit을 사용해 서버로 요청을 보내고 응답을 처리. (서버에 textId/textPw를 보내고, enqueue로 응답 처리 콜백 정의)
-                            override fun onResponse(call: Call<Mapping>, response: Response<Mapping>) {     //응답값을 response.body로 받아옴
-                                //웹 통신에 성공했을 때 실행. 응답값을 받아옴.
-                                var map = response.body()     //lat, lon
-
-                                val dialog = AlertDialog.Builder(this@Map)        //대괄호 안에 있어서 this@MainActivity 사용
-                                dialog.setTitle("알림!")
-                                dialog.setMessage("id =" + map?.lat + "\npw = " + map?.lon)
-                                dialog.show()
-                            }
-
-                            override fun onFailure(call: Call<Mapping>, t: Throwable) {
-                                //웹 통신에 실패했을 때 실행
-//                                val dialog = AlertDialog.Builder(this@Map)
-//                                dialog.setTitle("실패!")
-//                                dialog.setMessage("통신에 실패했습니다.")
-//                                dialog.show()
-                            }
-
-                        })
-                    }
-
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            // onPressEvent 메서드 내용 작성
-            return false // 또는 true, 이벤트 처리에 따라 적절히 반환
-        }
-
-            override fun onPressUpEvent(
-                p0: ArrayList<TMapMarkerItem?>?,
-                p1: ArrayList<TMapPOIItem?>?,
-                p2: TMapPoint?,
-                p3: PointF?
-            ): Boolean {
-                // onPressUpEvent 메서드 내용 작성
-                return false // 또는 true, 이벤트 처리에 따라 적절히 반환
-            }
-        })
-    }
+}
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -221,20 +179,20 @@ class Map : Activity() {
             }
         }
     }
+
     companion object {
         private const val mApiKey = "qdxPlTC4Sa1btX0D2LcTt4j3r8eTYsqS7QMhmNLj" // SKT
     }
-
 
     private val mDelayHandler: Handler by lazy {
         Handler()
     }
 
-    fun waitGuest(){
+    fun waitGuest() {
         mDelayHandler.postDelayed(::showGuest, 5000) // 5초 후에 showGuest 함수를 실행한다.
     }
 
-    private fun showGuest(){
+    private fun showGuest() {
         val sharedPreferences: SharedPreferences = getSharedPreferences("pref", 0)
         val IPnum = sharedPreferences.getString("IP_num", "0") ?: "0"
         // 실제 반복하는 코드를 여기에 적는다
@@ -243,7 +201,8 @@ class Map : Activity() {
             .addConverterFactory(GsonConverterFactory.create())     //응답값 JSON 데이터를 객체로 변환
             .build()
 
-        val LoopService = retrofit.create(LoopService::class.java)        //retrofit 객체를 만든 다음 create를 통해 서비스를 올려주면 loginService가 앞에서 정의한 INPUT OUTPUT을 가지고 서버를 호출할 수 있는 서비스 인터페이스가 된다.
+        val LoopService =
+            retrofit.create(LoopService::class.java)        //retrofit 객체를 만든 다음 create를 통해 서비스를 올려주면 loginService가 앞에서 정의한 INPUT OUTPUT을 가지고 서버를 호출할 수 있는 서비스 인터페이스가 된다.
         val roomCode = intent.getStringExtra("roomCode")
         val myCode: String = intent.getStringExtra("myCode") ?: ""
         val member: TextView = findViewById(R.id.member)
@@ -251,12 +210,15 @@ class Map : Activity() {
         if (roomCode != null) {
             LoopService.requestLogin(0, roomCode, myCode).enqueue(object :
                 Callback<Looping> {     //Retrofit을 사용해 서버로 요청을 보내고 응답을 처리. (서버에 textId/textPw를 보내고, enqueue로 응답 처리 콜백 정의)
-                override fun onResponse(call: Call<Looping>, response: Response<Looping>) {     //응답값을 response.body로 받아옴
+                override fun onResponse(
+                    call: Call<Looping>,
+                    response: Response<Looping>
+                ) {     //응답값을 response.body로 받아옴
                     //웹 통신에 성공했을 때 실행. 응답값을 받아옴.
                     var count = response.body()     //count
-                    if(count!!.count < 500 || check == 1) {
+                    if (count!!.count < 500 || check == 1) {
                         member.text = count.count.toString()
-                    } else{
+                    } else {
                         val dialog = CustomDialog(this@Map)
                         dialog.myDig()
                         check = 1
@@ -284,7 +246,7 @@ class Map : Activity() {
             .build()
 
         val LoopService = retrofit.create(LoopService::class.java)
-        val roomCode = intent.getStringExtra("roomCode") ?:""
+        val roomCode = intent.getStringExtra("roomCode") ?: ""
         val myCode: String = intent.getStringExtra("myCode") ?: ""
 
         LoopService.requestLogin(1000, roomCode, myCode).enqueue(object :
@@ -299,7 +261,9 @@ class Map : Activity() {
 
         })
         mDelayHandler.removeCallbacksAndMessages(null)
+        point_count = 0
     }
+
     fun cancelHandler() {
         val sharedPreferences: SharedPreferences = getSharedPreferences("pref", 0)
         val IPnum = sharedPreferences.getString("IP_num", "0") ?: "0"
@@ -310,7 +274,7 @@ class Map : Activity() {
             .build()
 
         val LoopService = retrofit.create(LoopService::class.java)
-        val roomCode = intent.getStringExtra("roomCode") ?:""
+        val roomCode = intent.getStringExtra("roomCode") ?: ""
         val myCode: String = intent.getStringExtra("myCode") ?: ""
 
         LoopService.requestLogin(1000, roomCode, myCode).enqueue(object :
@@ -326,9 +290,11 @@ class Map : Activity() {
         })
         mDelayHandler.removeCallbacksAndMessages(null)
     }
-    fun cancelGet(){
+
+    fun cancelGet() {
         mDelayHandler.removeCallbacksAndMessages(null)
     }
+
     fun getCode() {
         waitGet()
     }
@@ -337,11 +303,11 @@ class Map : Activity() {
         Handler()
     }
 
-    fun waitGet(){
+    fun waitGet() {
         DDelayHandler.postDelayed(::showGet, 5000) // 5초 후에 showGuest 함수를 실행한다.
     }
 
-    fun showGet(){
+    fun showGet() {
         val sharedPreferences: SharedPreferences = getSharedPreferences("pref", 0)
         val IPnum = sharedPreferences.getString("IP_num", "0") ?: "0"
         // 실제 반복하는 코드를 여기에 적는다
@@ -350,14 +316,19 @@ class Map : Activity() {
             .addConverterFactory(GsonConverterFactory.create())     //응답값 JSON 데이터를 객체로 변환
             .build()
 
-        val GetService = retrofit.create(Getservice::class.java)        //retrofit 객체를 만든 다음 create를 통해 서비스를 올려주면 loginService가 앞에서 정의한 INPUT OUTPUT을 가지고 서버를 호출할 수 있는 서비스 인터페이스가 된다.
+        val GetService =
+            retrofit.create(Getservice::class.java)        //retrofit 객체를 만든 다음 create를 통해 서비스를 올려주면 loginService가 앞에서 정의한 INPUT OUTPUT을 가지고 서버를 호출할 수 있는 서비스 인터페이스가 된다.
         val roomCode = intent.getStringExtra("roomCode")
         val myCode: String = intent.getStringExtra("myCode") ?: ""
-        val person = intent.getStringExtra("person") ?:""
+        val person = intent.getStringExtra("person") ?: ""
 
         if (roomCode != null) {
-            GetService.requestLogin(roomCode, myCode, person).enqueue(object : Callback<Get> {     //Retrofit을 사용해 서버로 요청을 보내고 응답을 처리. (서버에 textId/textPw를 보내고, enqueue로 응답 처리 콜백 정의)
-                override fun onResponse(call: Call<Get>, response: Response<Get>) {     //응답값을 response.body로 받아옴
+            GetService.requestLogin(roomCode, myCode, person).enqueue(object :
+                Callback<Get> {     //Retrofit을 사용해 서버로 요청을 보내고 응답을 처리. (서버에 textId/textPw를 보내고, enqueue로 응답 처리 콜백 정의)
+                override fun onResponse(
+                    call: Call<Get>,
+                    response: Response<Get>
+                ) {     //응답값을 response.body로 받아옴
                     val get = response.body()       //data, count
                     val count = get?.count ?: ""
                     val dialogView = layoutInflater.inflate(R.layout.activity_dialog, null)
@@ -381,5 +352,287 @@ class Map : Activity() {
             })
         }
         waitGet() // 코드 실행뒤에 계속해서 반복하도록 작업한다.
+    }
+
+
+
+    private fun initializeMapView() {
+        point_count = 0
+        // Ensure mapContainer is properly initialized
+        mapContainer = findViewById(R.id.mapview_layout)
+
+        // Remove the existing TMapView if it exists
+        mMapView?.let { mapContainer.removeView(it) }
+        mMapView = TMapView(this)
+
+        mMapView!!.setSKTMapApiKey(mApiKey)
+        mMapView!!.zoomLevel = 15
+//        initializeMapView()
+
+        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // 권한이 없는 경우 권한 요청 다이얼로그 표시
+            Log.d("GPSAccess", "Requesting GPS access")
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                REQUEST_LOCATION_PERMISSION
+            )
+        } else {
+            // 권한이 이미 있는 경우 위치 정보를 가져올 수 있습니다.
+            Log.d("GPSAccess", "GPS access already granted")
+            getLocation()
+
+        }
+
+        val locCurrent = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+
+        val curLat: Double = locCurrent?.latitude ?: 35.2340
+        val curLon: Double = locCurrent?.longitude ?: 129.0807
+
+        mMapView!!.setCenterPoint(curLon, curLat)
+
+        mapContainer.addView(mMapView)
+
+        mMapView?.removeAllMarkerItem()
+        mMapView?.removeTMapPolyLine("Route")
+
+        markerPoints.clear()
+
+        // Setup listeners or any other initial configuration for the TMapView
+        setupMapListeners(mMapView!!)
+
+    }
+
+
+    private fun setupMapListeners(mMapView: TMapView) {
+        // 클릭 이벤트 설정
+        val send: Button = findViewById(R.id.send)
+        val point_save: Button = findViewById(R.id.point_save)
+        var result: EditText = findViewById(R.id.result)
+        mMapView.setOnClickListenerCallBack(object : OnClickListenerCallback {
+            override fun onPressEvent(
+                p0: ArrayList<TMapMarkerItem?>?,
+                p1: ArrayList<TMapPOIItem?>?,
+                p2: TMapPoint?,
+                p3: PointF?
+            ): Boolean {
+                try {
+                    val sharedPreferences: SharedPreferences = getSharedPreferences("pref", 0)
+                    val IPnum = sharedPreferences.getString("IP_num", "0") ?: "0"
+                    var lat: Double = p2?.latitude ?: 0.0
+                    var lon: Double = p2?.longitude ?: 0.0
+                    Log.d("MyApp", "선택한 위치의 주소는 " + lat + "\n" + lon)
+
+                    fun addMarker(latitude: Double, longitude: Double) {
+                        val markerItem = TMapMarkerItem()
+                        val tMapPoint = TMapPoint(latitude, longitude)
+
+                        markerItem.setPosition(0.5f, 1.0f)
+                        markerItem.tMapPoint = tMapPoint
+                        markerItem.name = "마커"
+                        mMapView?.addMarkerItem("markerItem", markerItem)
+                    }
+                    addMarker(lat, lon)
+
+                    p2?.let { point ->
+                        point_save.setOnClickListener(View.OnClickListener {
+                            placeMultipleMarkers(mMapView, markerPoints)
+                        })
+                    }
+
+                    result.setText("위도: " + "$lat" + "\n경도: " + "$lon")
+
+                    var retrofit = Retrofit.Builder()
+                        .baseUrl("http://$IPnum:8000")        //(서버주소)
+                        .addConverterFactory(GsonConverterFactory.create())     //응답값 JSON 데이터를 객체로 변환
+                        .build()
+
+                    var MapService =
+                        retrofit.create(MapService::class.java)        //retrofit 객체를 만든 다음 create를 통해 서비스를 올려주면 loginService가 앞에서 정의한 INPUT OUTPUT을 가지고 서버를 호출할 수 있는 서비스 인터페이스가 된다.
+                    val person = intent.getStringExtra("person") ?: ""
+                    val roomCode = intent.getStringExtra("roomCode") ?: ""
+                    val myCode: String = intent.getStringExtra("myCode") ?: ""
+                    val markerPoints2 = convertMarkerPointsToString(markerPoints)
+                    send.setOnClickListener {
+
+                        MapService.requestLogin(markerPoints2, lon, person, roomCode, myCode)
+                            .enqueue(object :
+                                Callback<Mapping> {     //Retrofit을 사용해 서버로 요청을 보내고 응답을 처리. (서버에 textId/textPw를 보내고, enqueue로 응답 처리 콜백 정의)
+                                override fun onResponse(
+                                    call: Call<Mapping>,
+                                    response: Response<Mapping>
+                                ) {     //응답값을 response.body로 받아옴
+                                    //웹 통신에 성공했을 때 실행. 응답값을 받아옴.
+                                    var map = response.body()     //lat, lon
+
+                                    val dialog =
+                                        AlertDialog.Builder(this@Map)        //대괄호 안에 있어서 this@MainActivity 사용
+                                    dialog.setTitle("알림!")
+                                    dialog.setMessage("id =" + map?.lat + "\npw = " + map?.lon)
+                                    dialog.show()
+                                }
+
+                                override fun onFailure(call: Call<Mapping>, t: Throwable) {
+                                    //웹 통신에 실패했을 때 실행
+//                                val dialog = AlertDialog.Builder(this@Map)
+//                                dialog.setTitle("실패!")
+//                                dialog.setMessage("통신에 실패했습니다.")
+//                                dialog.show()
+                                }
+
+                            })
+                    }
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+                // onPressEvent 메서드 내용 작성
+                return false // 또는 true, 이벤트 처리에 따라 적절히 반환
+            }
+
+            override fun onPressUpEvent(
+                p0: ArrayList<TMapMarkerItem?>?,
+                p1: ArrayList<TMapPOIItem?>?,
+                p2: TMapPoint?,
+                p3: PointF?
+            ): Boolean {
+                // onPressUpEvent 메서드 내용 작성
+                return false // 또는 true, 이벤트 처리에 따라 적절히 반환
+            }
+        })
+    }
+
+
+    fun placeMultipleMarkers(mMapView: TMapView, locations: List<TMapPoint>) {
+        if(point_count < 2) {
+            locations.forEach { location ->
+                val originalIcon =
+                    BitmapFactory.decodeResource(
+                        resources,
+                        R.drawable.pin
+                    ) // Load the original icon
+                val resizedIcon =
+                    resizeBitmap(
+                        originalIcon,
+                        80,
+                        80
+                    ) // Resize the icon. Adjust 80x80 to your needs
+
+                val marker = TMapMarkerItem().apply {
+                    tMapPoint = location
+                    icon = resizedIcon // Set the resized icon
+                    setPosition(
+                        0.5f,
+                        1.0f
+                    ) // Adjusts the anchor point to the middle-bottom of the icon
+                    name = "$point_count" // Optional: Set a name for each marker
+                }
+                mMapView.addMarkerItem("$point_count", marker)
+            }
+            point_count += 1
+        }
+        else{
+            point_count = 0
+            locations.forEach { location ->
+                val originalIcon =
+                    BitmapFactory.decodeResource(
+                        resources,
+                        R.drawable.pin
+                    ) // Load the original icon
+                val resizedIcon =
+                    resizeBitmap(
+                        originalIcon,
+                        80,
+                        80
+                    ) // Resize the icon. Adjust 80x80 to your needs
+
+                val marker = TMapMarkerItem().apply {
+                    tMapPoint = location
+                    icon = resizedIcon // Set the resized icon
+                    setPosition(
+                        0.5f,
+                        1.0f
+                    ) // Adjusts the anchor point to the middle-bottom of the icon
+                    name = "$point_count" // Optional: Set a name for each marker
+                }
+
+                mMapView.addMarkerItem("$point_count", marker)
+            }
+            point_count += 1
+        }
+    }
+
+    private fun calculateRoute() {
+        if (markerPoints.size >= 2) { // Ensure there are at least two markers for a route
+            val tMapData = TMapData()
+
+            val startPoint = markerPoints.first()
+            val endPoint = markerPoints.last()
+            // If there are more than 2 markers, use the intermediate ones as waypoints
+            val waypoints = if (markerPoints.size > 2) markerPoints.subList(
+                1,
+                markerPoints.size - 1
+            ) else listOf()
+
+            // Logging the input points
+            Log.d(
+                "RouteCalculation",
+                "Starting point: ${startPoint.latitude}, ${startPoint.longitude}"
+            )
+            Log.d(
+                "RouteCalculation",
+                "Destination point: ${endPoint.latitude}, ${endPoint.longitude}"
+            )
+            waypoints.forEachIndexed { index, waypoint ->
+                Log.d(
+                    "RouteCalculation",
+                    "Waypoint $index: ${waypoint.latitude}, ${waypoint.longitude}"
+                )
+            }
+
+            tMapData.findPathDataWithType(
+                TMapData.TMapPathType.CAR_PATH,
+                startPoint,
+                endPoint,
+                ArrayList(waypoints),
+                0
+            ) { polyLine ->
+                if (polyLine != null) {
+                    mMapView!!.addTMapPolyLine("Route", polyLine)
+                } else {
+                    Log.d("Navigation", "Unable to calculate route.")
+                    // Handle the error, such as informing the user that the route could not be calculated.
+                }
+            }
+        } else {
+            Log.d("Navigation", "Not enough markers to calculate a route.")
+            // Inform the user that they need to place more markers.
+        }
+    }
+
+
+
+    fun reverseGeocodeLocation(mMapView: TMapView, location: TMapPoint) {
+        val tMapData = TMapData()
+        tMapData.reverseGeocoding(location.latitude, location.longitude, "A03") { addressInfo ->
+            Log.d("ReverseGeocoding", "Address: ${addressInfo.strFullAddress}")
+            // Handle the address info as needed, e.g., display it in the UI
+        }
+    }
+
+    fun convertMarkerPointsToString(markerPoints: List<TMapPoint>): String {
+        val stringBuilder = StringBuilder()
+        for ((index, point) in markerPoints.withIndex()) {
+            stringBuilder.append("${point.latitude},${point.longitude}")
+            if (index < markerPoints.size - 1) {
+                stringBuilder.append(";") // 각 좌표 사이에 구분자 추가
+            }
+        }
+        return stringBuilder.toString()
     }
 }
