@@ -44,12 +44,9 @@ class Map : Activity() {
     private val markerPoints = mutableListOf<TMapPoint>()
     private var resultPoints = mutableListOf<TMapPoint>()
     private lateinit var mapContainer: ConstraintLayout
-    private val member: TextView = findViewById(R.id.member)
-    private val OK_member: TextView = findViewById(R.id.OK_member)
-    private val person_member: TextView = findViewById(R.id.person_member)
 
     companion object {
-        private const val mApiKey = "NaawXpPLLm3oGRXVIUuuO5rV68T7Ad6yaSUFDjoZ" // SKT
+        private const val mApiKey = "zjkQPd0vuS2UlJ3m6oopv7PPv7wys4Qp4ifDlXCx" // SKT
     }
 
     fun resizeBitmap(bitmap: Bitmap, width: Int, height: Int): Bitmap {
@@ -61,11 +58,12 @@ class Map : Activity() {
         setContentView(R.layout.activity_map)
 
         val person = intent.getStringExtra("person") ?: ""
+        val person_member: TextView = findViewById(R.id.person_member)
 
         person_member.setText(person)
         initializeMapView()
-//        waitGuest()
-//
+        waitGuest()
+
         mContext = this
         val address: EditText = findViewById(R.id.address)
         val research: Button = findViewById(R.id.research)
@@ -182,6 +180,7 @@ class Map : Activity() {
             retrofit.create(LoopService::class.java)        //retrofit 객체를 만든 다음 create를 통해 서비스를 올려주면 loginService가 앞에서 정의한 INPUT OUTPUT을 가지고 서버를 호출할 수 있는 서비스 인터페이스가 된다.
         val roomCode = intent.getStringExtra("roomCode")
         val myCode: String = intent.getStringExtra("myCode") ?: ""
+        val member: TextView = findViewById(R.id.member)
 
         if (roomCode != null) {
             LoopService.requestLogin(0, roomCode, myCode).enqueue(object :
@@ -292,6 +291,8 @@ class Map : Activity() {
         val person = intent.getStringExtra("person") ?: ""
         val roomCode = intent.getStringExtra("roomCode") ?: ""
         val myCode: String = intent.getStringExtra("myCode") ?: ""
+        val member: TextView = findViewById(R.id.member)
+        val OK_member: TextView = findViewById(R.id.OK_member)
 
         GetService.requestLogin(roomCode, myCode, person).enqueue(object :
             Callback<Get> {     //Retrofit을 사용해 서버로 요청을 보내고 응답을 처리. (서버에 textId/textPw를 보내고, enqueue로 응답 처리 콜백 정의)
