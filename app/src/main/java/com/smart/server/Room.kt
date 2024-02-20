@@ -67,13 +67,13 @@ class Room : Activity() {
 
         RoomService.requestLogin(no).enqueue(object : Callback<MRoom> {        //Retrofit을 사용해 서버로 요청을 보내고 응답을 처리. (서버에 textId/textPw를 보내고, enqueue로 응답 처리 콜백 정의)
             override fun onResponse(call: Call<MRoom>, response: Response<MRoom>) {
-                val room = response.body()     //title, subtitle, person, region, roomcode
+                val room = response.body()     //title, region, city, person, roomcode
                 Log.d("통신 성공", "성공" + room!!.data[0])
                 profileList.clear()
 
                 val size = room.data.size
                     for (i in 0 until size) {
-                        profileList.add(Profiles(room.data[i].title, room.data[i].subtitle, room.data[i].person, room.data[i].region, room.data[i].roomCode))
+                        profileList.add(Profiles(room.data[i].title, room.data[i].region, room.data[i].city, room.data[i].person, room.data[i].roomCode))
                         adapter.notifyDataSetChanged()
                     }
 

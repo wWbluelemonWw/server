@@ -11,24 +11,23 @@
         android:id="@+id/person_num"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="200dp"
-        android:layout_marginTop="15dp"
         android:ems="10"
         android:imeOptions="flagNoExtractUi"
         android:text="0"
         android:textColor="#020202"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/subtitle_num" />
+        android:enabled="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/city_num"
+        app:layout_constraintStart_toStartOf="@+id/city_num"
+        app:layout_constraintTop_toBottomOf="@+id/city_num"
+        app:layout_constraintVertical_bias="0.100000024" />
 
     <EditText
         android:id="@+id/title_num"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="200dp"
         android:layout_marginTop="-150dp"
         android:ems="10"
         android:imeOptions="flagNoExtractUi"
@@ -39,98 +38,79 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintHorizontal_bias="0.85"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.339" />
+        app:layout_constraintVertical_bias="0.35000002" />
 
-    <EditText
-        android:id="@+id/subtitle_num"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="200dp"
-        android:layout_marginTop="15dp"
-        android:ems="10"
-        android:imeOptions="flagNoExtractUi"
-        android:text="0"
-        android:textColor="#020202"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title_num" />
-
-    <EditText
+    <Spinner
         android:id="@+id/region_num"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="200dp"
-        android:layout_marginTop="15dp"
-        android:ems="10"
-        android:imeOptions="flagNoExtractUi"
-        android:text="0"
+        android:layout_width="250dp"
+        android:layout_height="40dp"
+        android:layout_centerHorizontal="true"
         android:textColor="#020202"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/person_num" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/title_num"
+        app:layout_constraintStart_toStartOf="@+id/title_num"
+        app:layout_constraintTop_toBottomOf="@+id/title_num"
+        app:layout_constraintVertical_bias="0.050000012" />
+
+    <Spinner
+        android:id="@+id/city_num"
+        android:layout_width="250dp"
+        android:layout_height="40dp"
+        android:layout_centerHorizontal="true"
+        android:textColor="#020202"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/region_num"
+        app:layout_constraintStart_toStartOf="@+id/region_num"
+        app:layout_constraintTop_toBottomOf="@+id/region_num"
+        app:layout_constraintVertical_bias="0.050000012" />
 
     <TextView
         android:id="@+id/person"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="150dp"
-        android:text="인원수"
+        android:text="최소인원"
         android:textColor="#000000"
-        android:textSize="24sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/person_num"
-        app:layout_constraintEnd_toStartOf="@+id/person_num"
-        app:layout_constraintStart_toStartOf="@+id/region"
+        app:layout_constraintEnd_toEndOf="@+id/city"
+        app:layout_constraintStart_toStartOf="@+id/city"
         app:layout_constraintTop_toTopOf="@+id/person_num" />
 
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="150dp"
         android:text="제목"
         android:textColor="#000000"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/title_num"
-        app:layout_constraintEnd_toStartOf="@+id/title_num"
-        app:layout_constraintStart_toStartOf="@+id/subtitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.15"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/title_num" />
-
-    <TextView
-        android:id="@+id/subtitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="150dp"
-        android:text="부제목"
-        android:textColor="#000000"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/subtitle_num"
-        app:layout_constraintEnd_toStartOf="@+id/subtitle_num"
-        app:layout_constraintStart_toStartOf="@+id/person"
-        app:layout_constraintTop_toTopOf="@+id/subtitle_num" />
 
     <TextView
         android:id="@+id/region"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="150dp"
-        android:text="지역"
+        android:text="시/도"
         android:textColor="#000000"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/region_num"
-        app:layout_constraintEnd_toStartOf="@+id/region_num"
-        app:layout_constraintTop_toTopOf="@+id/region_num" />
+        app:layout_constraintEnd_toEndOf="@+id/title"
+        app:layout_constraintStart_toStartOf="@+id/title"
+        app:layout_constraintTop_toBottomOf="@+id/title"
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
         android:id="@+id/save"
@@ -140,6 +120,22 @@
         android:text="저장"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/person_num"
+        app:layout_constraintVertical_bias="0.35000002" />
+
+    <TextView
+        android:id="@+id/city"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="군/구"
+        android:textColor="#000000"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/city_num"
+        app:layout_constraintEnd_toEndOf="@+id/region"
+        app:layout_constraintStart_toStartOf="@+id/region"
+        app:layout_constraintTop_toBottomOf="@+id/region"
+        app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

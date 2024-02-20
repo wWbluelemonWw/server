@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="250dp">
+    android:layout_height="180dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/lay2"
@@ -15,20 +15,20 @@
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintVertical_bias="1.0">
 
         <EditText
             android:id="@+id/titlename"
-            android:layout_width="318dp"
-            android:layout_height="30dp"
+            android:layout_width="300dp"
+            android:layout_height="40dp"
+            android:focusableInTouchMode="false"
             android:text="제목"
             android:textColor="#090909"
             android:textSize="10sp"
             android:textStyle="bold"
-            android:focusableInTouchMode="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.493"
@@ -37,61 +37,62 @@
             app:layout_constraintVertical_bias="0.100000024" />
 
         <EditText
-            android:id="@+id/subtitlename"
-            android:layout_width="318dp"
-            android:layout_height="30dp"
-            android:text="부제목"
+            android:id="@+id/regionname"
+            android:layout_width="120dp"
+            android:layout_height="40dp"
+            android:focusableInTouchMode="false"
+            android:text="시/도"
             android:textColor="#090909"
             android:textSize="10sp"
             android:textStyle="bold"
-            android:focusableInTouchMode="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/titlename"
             app:layout_constraintTop_toBottomOf="@+id/titlename"
-            app:layout_constraintVertical_bias="0.100000024" />
+            app:layout_constraintVertical_bias="0.158" />
+
+        <EditText
+            android:id="@+id/cityname"
+            android:layout_width="120dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="24dp"
+            android:focusableInTouchMode="false"
+            android:text="군/구"
+            android:textColor="#090909"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/regionname"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/regionname"
+            app:layout_constraintTop_toTopOf="@+id/regionname" />
 
         <EditText
             android:id="@+id/personname"
-            android:layout_width="318dp"
-            android:layout_height="30dp"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:focusableInTouchMode="false"
             android:text="인원수"
             android:textColor="#090909"
             android:textSize="10sp"
             android:textStyle="bold"
-            android:focusableInTouchMode="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.493"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/regionname"
             app:layout_constraintTop_toBottomOf="@+id/regionname"
-            app:layout_constraintVertical_bias="0.100000024" />
-
-        <EditText
-            android:id="@+id/regionname"
-            android:layout_width="318dp"
-            android:layout_height="30dp"
-            android:text="지역"
-            android:textColor="#090909"
-            android:textSize="10sp"
-            android:textStyle="bold"
-            android:focusableInTouchMode="false"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.493"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/subtitlename"
-            app:layout_constraintVertical_bias="0.100000024" />
+            app:layout_constraintVertical_bias="0.25" />
 
         <Button
             android:id="@+id/Go"
-            android:layout_width="102dp"
-            android:layout_height="34dp"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
             android:text="입장"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/personname"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/personname" />
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/cityname"
+            app:layout_constraintTop_toTopOf="@+id/personname" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

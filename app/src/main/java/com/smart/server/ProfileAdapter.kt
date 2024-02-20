@@ -27,9 +27,9 @@ class ProfileAdapter(
 
     inner class CustomViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val titlename = itemView.findViewById<TextView>(R.id.titlename)
-        val subtitlename = itemView.findViewById<TextView>(R.id.subtitlename)
-        val personname = itemView.findViewById<TextView>(R.id.personname)
         val regionname = itemView.findViewById<TextView>(R.id.regionname)
+        val cityname = itemView.findViewById<TextView>(R.id.cityname)
+        val personname = itemView.findViewById<TextView>(R.id.personname)
         val goButton = itemView.findViewById<Button>(R.id.Go)
 
         init {
@@ -50,9 +50,9 @@ class ProfileAdapter(
 
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
         holder.titlename.text = profileList.get(position).titlename
-        holder.subtitlename.text = profileList.get(position).subtitlename
-        holder.personname.text = profileList.get(position).personname
         holder.regionname.text = profileList.get(position).regionname
+        holder.cityname.text = profileList.get(position).cityname
+        holder.personname.text = profileList.get(position).personname
 
     }
 

@@ -39,11 +39,18 @@ class Map : Activity() {
     private var mMapView: TMapView? = null
     private var mContext: Context? = null
     private val REQUEST_LOCATION_PERMISSION = 1
-    private var check = 0
     private var point_count = 0
     private lateinit var locationManager: LocationManager
     private val markerPoints = mutableListOf<TMapPoint>()
-    private lateinit var mapContainer: LinearLayout
+    private var resultPoints = mutableListOf<TMapPoint>()
+    private lateinit var mapContainer: ConstraintLayout
+    private val member: TextView = findViewById(R.id.member)
+    private val OK_member: TextView = findViewById(R.id.OK_member)
+    private val person_member: TextView = findViewById(R.id.person_member)
+
+    companion object {
+        private const val mApiKey = "NaawXpPLLm3oGRXVIUuuO5rV68T7Ad6yaSUFDjoZ" // SKT
+    }
 
     fun resizeBitmap(bitmap: Bitmap, width: Int, height: Int): Bitmap {
         return Bitmap.createScaledBitmap(bitmap, width, height, false)
@@ -53,19 +60,20 @@ class Map : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
 
-        initializeMapView()
-        waitGuest()
+        val person = intent.getStringExtra("person") ?: ""
 
+        person_member.setText(person)
+        initializeMapView()
+//        waitGuest()
+//
         mContext = this
-        var result: EditText = findViewById(R.id.result)
-        var address: EditText = findViewById(R.id.address)
-        var research: Button = findViewById(R.id.research)
+        val address: EditText = findViewById(R.id.address)
+        val research: Button = findViewById(R.id.research)
+        val re_set: Button = findViewById(R.id.re_set)
+
         val locCurrent = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
         val curLat: Double = locCurrent?.latitude ?: 0.0
         val curLon: Double = locCurrent?.longitude ?: 0.0
-        val route: Button = findViewById(R.id.route)
-        val re_set: Button = findViewById(R.id.re_set)
-
 
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         if (ContextCompat.checkSelfPermission(
@@ -84,20 +92,7 @@ class Map : Activity() {
             getLocation()
         }
 
-//        // 지도 생성하기
-//        val mMainRelativeLayout = findViewById<View>(R.id.mapview_layout) as LinearLayout
-//        mMapView = TMapView(this)
-//        mMainRelativeLayout.addView(mMapView)
-//        mMapView!!.setSKTMapApiKey(mApiKey)
-//        mMapView!!.zoomLevel = 14
-//        mMapView!!.setCenterPoint(curLon, curLat)
-
         val tmapdata = TMapData()
-
-        route.setOnClickListener {
-            Log.d("경로 안내", "Calculate route button clicked.")
-            calculateRoute()
-        }
 
         re_set.setOnClickListener {
             Log.d("초기화", "Reset button clicked.")
@@ -133,7 +128,7 @@ class Map : Activity() {
                                 )
                             }
                             val resultText = get_result.joinToString(separator = "")
-                            result.setText(resultText)
+//                            result.setText(resultText)
                         }
 
                     }
@@ -161,28 +156,10 @@ class Map : Activity() {
 //}
         setupMapListeners(mMapView!!)
 
-}
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        when (requestCode) {
-            REQUEST_LOCATION_PERMISSION -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // 권한이 승인된 경우 위치 정보를 가져올 수 있습니다.
-                    getLocation()
-                } else {
-                    // 권한이 거부된 경우 사용자에게 권한의 중요성을 설명하거나 대체 작업을 수행할 수 있습니다.
-                }
-            }
-        }
     }
 
-    companion object {
-        private const val mApiKey = "qdxPlTC4Sa1btX0D2LcTt4j3r8eTYsqS7QMhmNLj" // SKT
-    }
+
+
 
     private val mDelayHandler: Handler by lazy {
         Handler()
@@ -205,7 +182,6 @@ class Map : Activity() {
             retrofit.create(LoopService::class.java)        //retrofit 객체를 만든 다음 create를 통해 서비스를 올려주면 loginService가 앞에서 정의한 INPUT OUTPUT을 가지고 서버를 호출할 수 있는 서비스 인터페이스가 된다.
         val roomCode = intent.getStringExtra("roomCode")
         val myCode: String = intent.getStringExtra("myCode") ?: ""
-        val member: TextView = findViewById(R.id.member)
 
         if (roomCode != null) {
             LoopService.requestLogin(0, roomCode, myCode).enqueue(object :
@@ -215,14 +191,9 @@ class Map : Activity() {
                     response: Response<Looping>
                 ) {     //응답값을 response.body로 받아옴
                     //웹 통신에 성공했을 때 실행. 응답값을 받아옴.
-                    var count = response.body()     //count
-                    if (count!!.count < 500 || check == 1) {
-                        member.text = count.count.toString()
-                    } else {
-                        val dialog = CustomDialog(this@Map)
-                        dialog.myDig()
-                        check = 1
-                    }
+                    val count = response.body()     //count
+                    member.text = count!!.count.toString()
+
                 }
 
                 override fun onFailure(call: Call<Looping>, t: Throwable) {
@@ -261,6 +232,7 @@ class Map : Activity() {
 
         })
         mDelayHandler.removeCallbacksAndMessages(null)
+        DDelayHandler.removeCallbacksAndMessages(null)
         point_count = 0
     }
 
@@ -316,41 +288,37 @@ class Map : Activity() {
             .addConverterFactory(GsonConverterFactory.create())     //응답값 JSON 데이터를 객체로 변환
             .build()
 
-        val GetService =
-            retrofit.create(Getservice::class.java)        //retrofit 객체를 만든 다음 create를 통해 서비스를 올려주면 loginService가 앞에서 정의한 INPUT OUTPUT을 가지고 서버를 호출할 수 있는 서비스 인터페이스가 된다.
-        val roomCode = intent.getStringExtra("roomCode")
-        val myCode: String = intent.getStringExtra("myCode") ?: ""
+        val GetService = retrofit.create(Getservice::class.java)        //retrofit 객체를 만든 다음 create를 통해 서비스를 올려주면 loginService가 앞에서 정의한 INPUT OUTPUT을 가지고 서버를 호출할 수 있는 서비스 인터페이스가 된다.
         val person = intent.getStringExtra("person") ?: ""
+        val roomCode = intent.getStringExtra("roomCode") ?: ""
+        val myCode: String = intent.getStringExtra("myCode") ?: ""
 
-        if (roomCode != null) {
-            GetService.requestLogin(roomCode, myCode, person).enqueue(object :
-                Callback<Get> {     //Retrofit을 사용해 서버로 요청을 보내고 응답을 처리. (서버에 textId/textPw를 보내고, enqueue로 응답 처리 콜백 정의)
-                override fun onResponse(
-                    call: Call<Get>,
-                    response: Response<Get>
-                ) {     //응답값을 response.body로 받아옴
-                    val get = response.body()       //data, count
-                    val count = get?.count ?: ""
-                    val dialogView = layoutInflater.inflate(R.layout.activity_dialog, null)
-                    val AP_num: EditText = dialogView.findViewById(R.id.AP_num)
+        GetService.requestLogin(roomCode, myCode, person).enqueue(object :
+            Callback<Get> {     //Retrofit을 사용해 서버로 요청을 보내고 응답을 처리. (서버에 textId/textPw를 보내고, enqueue로 응답 처리 콜백 정의)
+            override fun onResponse(
+                call: Call<Get>,
+                response: Response<Get>
+            ) {     //응답값을 response.body로 받아옴
+                val get = response.body()       //data, count, OK_count
+                val re_data = get?.data ?:""
 
-                    AP_num.setText(count.toString())
+                member.text = get!!.count.toString()
+                OK_member.text = get.OK_count.toString()
 
-                    if (get?.data.toString() != "1") {
-                        val dialog =
-                            AlertDialog.Builder(this@Map)        //대괄호 안에 있어서 this@MainActivity 사용
-                        dialog.setTitle("알림!")
-                        dialog.setMessage("결과 =" + get)
-                        dialog.show()
+                if (get.data != "1") {
+                    mMapView?.let { mapView ->
+                        Str_to_Tmap(re_data)
+                        placeMultipleMarkers(1, mapView, resultPoints)
+                        calculateRoute(resultPoints)
                     }
                 }
+            }
 
 
-                override fun onFailure(call: Call<Get>, t: Throwable) {
-                }
+            override fun onFailure(call: Call<Get>, t: Throwable) {
+            }
 
-            })
-        }
+        })
         waitGet() // 코드 실행뒤에 계속해서 반복하도록 작업한다.
     }
 
@@ -413,7 +381,8 @@ class Map : Activity() {
         // 클릭 이벤트 설정
         val send: Button = findViewById(R.id.send)
         val point_save: Button = findViewById(R.id.point_save)
-        var result: EditText = findViewById(R.id.result)
+        val start: EditText = findViewById(R.id.start)
+        val end: EditText = findViewById(R.id.end)
         mMapView.setOnClickListenerCallBack(object : OnClickListenerCallback {
             override fun onPressEvent(
                 p0: ArrayList<TMapMarkerItem?>?,
@@ -424,8 +393,8 @@ class Map : Activity() {
                 try {
                     val sharedPreferences: SharedPreferences = getSharedPreferences("pref", 0)
                     val IPnum = sharedPreferences.getString("IP_num", "0") ?: "0"
-                    var lat: Double = p2?.latitude ?: 0.0
-                    var lon: Double = p2?.longitude ?: 0.0
+                    val lat: Double = p2?.latitude ?: 0.0
+                    val lon: Double = p2?.longitude ?: 0.0
                     Log.d("MyApp", "선택한 위치의 주소는 " + lat + "\n" + lon)
 
                     fun addMarker(latitude: Double, longitude: Double) {
@@ -435,32 +404,68 @@ class Map : Activity() {
                         markerItem.setPosition(0.5f, 1.0f)
                         markerItem.tMapPoint = tMapPoint
                         markerItem.name = "마커"
-                        mMapView?.addMarkerItem("markerItem", markerItem)
+                        mMapView.addMarkerItem("markerItem", markerItem)
                     }
                     addMarker(lat, lon)
 
                     p2?.let { point ->
                         point_save.setOnClickListener(View.OnClickListener {
-                            placeMultipleMarkers(mMapView, markerPoints)
+                            if(markerPoints.size < 2) {
+                                markerPoints.add(point)
+                                if(markerPoints.size == 1){
+                                    reverseGeocodeLocation(mMapView, markerPoints[0]) { reverse_marker ->
+                                        runOnUiThread {
+                                            start.setText(reverse_marker)
+                                        }
+                                    }
+                                }else{
+                                    reverseGeocodeLocation(mMapView, markerPoints[1]) { reverse_marker ->
+                                        runOnUiThread {
+                                            end.setText(reverse_marker)
+                                        }
+                                    }
+                                }
+                            }else {
+                                if (point_count == 1) {
+                                    markerPoints[1] = point
+                                    reverseGeocodeLocation(mMapView, markerPoints[1]) { reverse_marker ->
+                                        runOnUiThread {
+                                            end.setText(reverse_marker)
+                                        }
+                                    }
+                                } else {
+                                    markerPoints[0] = point
+                                    reverseGeocodeLocation(mMapView, markerPoints[0]) { reverse_marker ->
+                                        runOnUiThread {
+                                            start.setText(reverse_marker)
+                                        }
+                                    }
+                                }
+                            }
+                            placeMultipleMarkers(0, mMapView, markerPoints)
+                            if(point_count > 0) {
+                                point_count = 0
+                            }else{
+                                point_count += 1
+                            }
+                            calculateRoute(markerPoints)
+
                         })
                     }
-
-                    result.setText("위도: " + "$lat" + "\n경도: " + "$lon")
 
                     var retrofit = Retrofit.Builder()
                         .baseUrl("http://$IPnum:8000")        //(서버주소)
                         .addConverterFactory(GsonConverterFactory.create())     //응답값 JSON 데이터를 객체로 변환
                         .build()
 
-                    var MapService =
-                        retrofit.create(MapService::class.java)        //retrofit 객체를 만든 다음 create를 통해 서비스를 올려주면 loginService가 앞에서 정의한 INPUT OUTPUT을 가지고 서버를 호출할 수 있는 서비스 인터페이스가 된다.
+                    var MapService = retrofit.create(MapService::class.java)        //retrofit 객체를 만든 다음 create를 통해 서비스를 올려주면 loginService가 앞에서 정의한 INPUT OUTPUT을 가지고 서버를 호출할 수 있는 서비스 인터페이스가 된다.
                     val person = intent.getStringExtra("person") ?: ""
                     val roomCode = intent.getStringExtra("roomCode") ?: ""
                     val myCode: String = intent.getStringExtra("myCode") ?: ""
-                    val markerPoints2 = convertMarkerPointsToString(markerPoints)
+
                     send.setOnClickListener {
 
-                        MapService.requestLogin(markerPoints2, lon, person, roomCode, myCode)
+                        MapService.requestLogin(markerPoints.toString(), person, roomCode, myCode)
                             .enqueue(object :
                                 Callback<Mapping> {     //Retrofit을 사용해 서버로 요청을 보내고 응답을 처리. (서버에 textId/textPw를 보내고, enqueue로 응답 처리 콜백 정의)
                                 override fun onResponse(
@@ -468,21 +473,12 @@ class Map : Activity() {
                                     response: Response<Mapping>
                                 ) {     //응답값을 response.body로 받아옴
                                     //웹 통신에 성공했을 때 실행. 응답값을 받아옴.
-                                    var map = response.body()     //lat, lon
-
-                                    val dialog =
-                                        AlertDialog.Builder(this@Map)        //대괄호 안에 있어서 this@MainActivity 사용
-                                    dialog.setTitle("알림!")
-                                    dialog.setMessage("id =" + map?.lat + "\npw = " + map?.lon)
-                                    dialog.show()
+                                    var map = response.body()     //markerPoints
+                                    cancelGet()
+                                    getCode()
                                 }
 
                                 override fun onFailure(call: Call<Mapping>, t: Throwable) {
-                                    //웹 통신에 실패했을 때 실행
-//                                val dialog = AlertDialog.Builder(this@Map)
-//                                dialog.setTitle("실패!")
-//                                dialog.setMessage("통신에 실패했습니다.")
-//                                dialog.show()
                                 }
 
                             })
@@ -508,66 +504,43 @@ class Map : Activity() {
     }
 
 
-    fun placeMultipleMarkers(mMapView: TMapView, locations: List<TMapPoint>) {
-        if(point_count < 2) {
-            locations.forEach { location ->
-                val originalIcon =
-                    BitmapFactory.decodeResource(
-                        resources,
-                        R.drawable.pin
-                    ) // Load the original icon
-                val resizedIcon =
-                    resizeBitmap(
-                        originalIcon,
-                        80,
-                        80
-                    ) // Resize the icon. Adjust 80x80 to your needs
-
-                val marker = TMapMarkerItem().apply {
-                    tMapPoint = location
-                    icon = resizedIcon // Set the resized icon
-                    setPosition(
-                        0.5f,
-                        1.0f
-                    ) // Adjusts the anchor point to the middle-bottom of the icon
-                    name = "$point_count" // Optional: Set a name for each marker
-                }
-                mMapView.addMarkerItem("$point_count", marker)
-            }
-            point_count += 1
+    fun placeMultipleMarkers(ok: Int, mMapView: TMapView, locations: List<TMapPoint>) {
+        if(ok == 0){
+            mMapView.removeAllMarkerItem()
         }
-        else{
-            point_count = 0
-            locations.forEach { location ->
-                val originalIcon =
-                    BitmapFactory.decodeResource(
-                        resources,
+
+        locations.forEachIndexed { index, location ->
+            val originalIcon =
+                BitmapFactory.decodeResource(
+                    resources,
+                    if(index == 0){
+                        R.drawable.start
+                    }else if(ok == 1){
                         R.drawable.pin
-                    ) // Load the original icon
-                val resizedIcon =
-                    resizeBitmap(
-                        originalIcon,
-                        80,
-                        80
-                    ) // Resize the icon. Adjust 80x80 to your needs
-
-                val marker = TMapMarkerItem().apply {
-                    tMapPoint = location
-                    icon = resizedIcon // Set the resized icon
-                    setPosition(
-                        0.5f,
-                        1.0f
-                    ) // Adjusts the anchor point to the middle-bottom of the icon
-                    name = "$point_count" // Optional: Set a name for each marker
-                }
-
-                mMapView.addMarkerItem("$point_count", marker)
+                    }else{
+                        R.drawable.end
+                    }
+                ) // Load the original icon
+            val resizedIcon =
+                resizeBitmap(
+                    originalIcon,
+                    80,
+                    80
+                ) // Resize the icon. Adjust 80x80 to your needs
+            val marker = TMapMarkerItem().apply {
+                tMapPoint = location
+                icon = resizedIcon // Set the resized icon
+                setPosition(
+                    0.5f,
+                    1.0f
+                ) // Adjusts the anchor point to the middle-bottom of the icon
+                name = "Marker $index" // Optional: Set a name for each marker
             }
-            point_count += 1
+            mMapView.addMarkerItem("Marker $index", marker)
         }
     }
 
-    private fun calculateRoute() {
+    private fun calculateRoute(markerPoints: List<TMapPoint>) {
         if (markerPoints.size >= 2) { // Ensure there are at least two markers for a route
             val tMapData = TMapData()
 
@@ -615,24 +588,25 @@ class Map : Activity() {
         }
     }
 
+    fun Str_to_Tmap(str: String){
+        val points_String = str
+        val pattern = "\\(([^,]+),\\s([^)]+)\\)".toRegex()
+        val pointMatches = pattern.findAll(points_String)
 
-
-    fun reverseGeocodeLocation(mMapView: TMapView, location: TMapPoint) {
-        val tMapData = TMapData()
-        tMapData.reverseGeocoding(location.latitude, location.longitude, "A03") { addressInfo ->
-            Log.d("ReverseGeocoding", "Address: ${addressInfo.strFullAddress}")
-            // Handle the address info as needed, e.g., display it in the UI
+        for (match in pointMatches) {
+            val latitude = match.groupValues[1].toDouble()
+            val longitude = match.groupValues[2].toDouble()
+            val point = TMapPoint(latitude, longitude)
+            resultPoints.add(point)
         }
+
     }
 
-    fun convertMarkerPointsToString(markerPoints: List<TMapPoint>): String {
-        val stringBuilder = StringBuilder()
-        for ((index, point) in markerPoints.withIndex()) {
-            stringBuilder.append("${point.latitude},${point.longitude}")
-            if (index < markerPoints.size - 1) {
-                stringBuilder.append(";") // 각 좌표 사이에 구분자 추가
-            }
+    fun reverseGeocodeLocation(mMapView: TMapView, location: TMapPoint, callback: (String) -> Unit) {
+        val tMapData = TMapData()
+        tMapData.reverseGeocoding(location.latitude, location.longitude, "A03") { addressInfo ->
+            val fullAddress = addressInfo.strFullAddress
+            callback(fullAddress)
         }
-        return stringBuilder.toString()
     }
 }

@@ -6,8 +6,7 @@ data class Login(
     )
 
 data class Mapping(
-    var lat : String,
-    var lon : String
+    var markerPoints : String
 )
 
 data class Looping(
@@ -23,13 +22,14 @@ data class MRoom(
 )
 data class MRoomData(
     var title: String,
-    var subtitle: String,
-    var person: String,
     var region: String,
+    var city: String,
+    var person: String,
     var roomCode: String
 )
 
 data class Get(
     var data : String,
-    var count : Int
+    var count : Int,
+    var OK_count : Int
 )
