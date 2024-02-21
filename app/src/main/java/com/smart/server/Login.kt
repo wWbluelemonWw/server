@@ -29,7 +29,8 @@ data class MRoomData(
 )
 
 data class Get(
-    var data : String,
+    val wait : String,
+    val data : String,
     var count : Int,
     var OK_count : Int
 )
