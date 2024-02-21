@@ -516,23 +516,17 @@ class Map : Activity() {
         }
 
         locations.forEachIndexed { index, location ->
-            val originalIcon =
-                BitmapFactory.decodeResource(
-                    resources,
-                    if(index == 0){
-                        R.drawable.start
-                    }else if(index == locations.lastIndex){
-                        R.drawable.end
-                    }else{
-                        R.drawable.pin
-                    }
-                ) // Load the original icon
-            val resizedIcon =
-                resizeBitmap(
-                    originalIcon,
-                    35,
-                    50
-                ) // Resize the icon. Adjust 80x80 to your needs
+            val originalIcon = when {
+                index == 0 -> BitmapFactory.decodeResource(resources, R.drawable.start)
+                index == locations.lastIndex -> BitmapFactory.decodeResource(resources, R.drawable.end)
+                else -> BitmapFactory.decodeResource(resources, R.drawable.pin)
+            }
+
+            val resizedIcon = when {
+                index == 0 -> resizeBitmap(originalIcon, 70, 70) // start 아이콘 크기 조정
+                index == locations.lastIndex -> resizeBitmap(originalIcon, 70, 70) // end 아이콘 크기 조정
+                else -> resizeBitmap(originalIcon, 35, 50) // pin 아이콘 크기 조정
+            }
             val marker = TMapMarkerItem().apply {
                 tMapPoint = location
                 icon = resizedIcon // Set the resized icon
