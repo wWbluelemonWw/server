@@ -11,25 +11,25 @@ class CustomDialog(private val activity: Activity) {
     private val dialog = Dialog(activity)
 
     fun myDig(){
-//        dialog.setContentView(R.layout.activity_dialog)
-//
-//        val btnDone = dialog.findViewById<Button>(R.id.btnDone)
-//        val btnCancel = dialog.findViewById<Button>(R.id.btnCancel)
-//        dialog.window!!.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT)
-////        dialog.setCanceledOnTouchOutside(true)
-//        dialog.setCancelable(true)
-//
-//        btnDone.setOnClickListener{
-//
-//        }
-//        btnCancel.setOnClickListener {
-//            (activity as Map).cancelHandler()
-//            dialog.dismiss()
-//            val intent = Intent(activity, Room::class.java)
-//            activity.startActivity(intent)
-//        }
-//
-//        dialog.show()
+        dialog.setContentView(R.layout.activity_dialog)
+
+        val btnDone = dialog.findViewById<Button>(R.id.btnDone)
+        val btnCancel = dialog.findViewById<Button>(R.id.btnCancel)
+        dialog.window!!.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT)
+//        dialog.setCanceledOnTouchOutside(true)
+        dialog.setCancelable(true)
+
+        btnDone.setOnClickListener{
+            dialog.dismiss()
+        }
+        btnCancel.setOnClickListener {
+            (activity as Map).cancelHandler()
+            dialog.dismiss()
+            val intent = Intent(activity, Room::class.java)
+            activity.startActivity(intent)
+        }
+
+        dialog.show()
     }
 
 }

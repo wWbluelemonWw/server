@@ -61,6 +61,7 @@ class Map : Activity() {
         val person_member: TextView = findViewById(R.id.person_member)
 
         person_member.setText(person)
+
         initializeMapView()
         waitGuest()
 
@@ -164,7 +165,7 @@ class Map : Activity() {
     }
 
     fun waitGuest() {
-        mDelayHandler.postDelayed(::showGuest, 5000) // 5초 후에 showGuest 함수를 실행한다.
+        mDelayHandler.postDelayed(::showGuest, 8000) // 8초 후에 showGuest 함수를 실행한다.
     }
 
     private fun showGuest() {
@@ -275,7 +276,7 @@ class Map : Activity() {
     }
 
     fun waitGet() {
-        DDelayHandler.postDelayed(::showGet, 5000) // 5초 후에 showGuest 함수를 실행한다.
+        DDelayHandler.postDelayed(::showGet, 8000) // 8초 후에 showGuest 함수를 실행한다.
     }
 
     fun showGet() {
@@ -300,17 +301,19 @@ class Map : Activity() {
                 call: Call<Get>,
                 response: Response<Get>
             ) {     //응답값을 response.body로 받아옴
-                val get = response.body()       //data, count, OK_count
-                val re_data = get?.data ?:""
-
+                val get = response.body()       //wait, data, count, OK_count
+                val re_data = get?.data.toString()
+                Log.d("안녕하세요",re_data)
                 member.text = get!!.count.toString()
                 OK_member.text = get.OK_count.toString()
 
-                if (get.data != "1") {
+                if (get.wait != "1") {
                     mMapView?.let { mapView ->
                         Str_to_Tmap(re_data)
-                        placeMultipleMarkers(1, mapView, resultPoints)
                         calculateRoute(resultPoints)
+                        placeMultipleMarkers(1, mapView, resultPoints)
+                        DDelayHandler.removeCallbacksAndMessages(null)
+                        waitGuest()
                     }
                 }
             }
@@ -480,6 +483,8 @@ class Map : Activity() {
                                 }
 
                                 override fun onFailure(call: Call<Mapping>, t: Throwable) {
+                                    cancelGet()
+                                    getCode()
                                 }
 
                             })
@@ -516,17 +521,17 @@ class Map : Activity() {
                     resources,
                     if(index == 0){
                         R.drawable.start
-                    }else if(ok == 1){
-                        R.drawable.pin
-                    }else{
+                    }else if(index == locations.lastIndex){
                         R.drawable.end
+                    }else{
+                        R.drawable.pin
                     }
                 ) // Load the original icon
             val resizedIcon =
                 resizeBitmap(
                     originalIcon,
-                    80,
-                    80
+                    35,
+                    50
                 ) // Resize the icon. Adjust 80x80 to your needs
             val marker = TMapMarkerItem().apply {
                 tMapPoint = location
@@ -610,4 +615,5 @@ class Map : Activity() {
             callback(fullAddress)
         }
     }
+
 }
