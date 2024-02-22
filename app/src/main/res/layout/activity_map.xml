@@ -18,90 +18,135 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <EditText
-            android:id="@+id/address"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="text"
-            android:text="지명"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/member"
-            android:layout_width="60dp"
-            android:layout_height="40dp"
-            android:text="1"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/mapview_layout"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/address_layout"
+            android:layout_width="250dp"
+            android:layout_height="match_parent"
+            android:background="#FFFFFF"
+            android:elevation="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/address" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/OK_member"
-            android:layout_width="60dp"
-            android:layout_height="40dp"
-            android:text="0"
-            android:textAlignment="viewStart"
-            android:textSize="24sp"
-            android:textStyle="bold"
+            <EditText
+                android:id="@+id/address"
+                android:layout_width="150dp"
+                android:layout_height="60dp"
+                android:ems="10"
+                android:inputType="text"
+                android:text="지명"
+                fbutton:layout_constraintBottom_toBottomOf="parent"
+                fbutton:layout_constraintEnd_toEndOf="parent"
+                fbutton:layout_constraintHorizontal_bias="0.0"
+                fbutton:layout_constraintStart_toStartOf="parent"
+                fbutton:layout_constraintTop_toTopOf="parent"
+                fbutton:layout_constraintVertical_bias="0.0" />
+
+            <Button
+                android:id="@+id/research_button"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:text="검색"
+                android:textAlignment="center"
+                android:textSize="14sp"
+                fbutton:layout_constraintBottom_toBottomOf="@+id/address"
+                fbutton:layout_constraintEnd_toEndOf="parent"
+                fbutton:layout_constraintStart_toEndOf="@+id/address"
+                fbutton:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/address_view"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                fbutton:layout_constraintBottom_toBottomOf="parent"
+                fbutton:layout_constraintEnd_toEndOf="parent"
+                fbutton:layout_constraintStart_toStartOf="parent"
+                fbutton:layout_constraintTop_toBottomOf="@+id/address" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@+id/mapview_layout"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.07"
-            app:layout_constraintStart_toEndOf="@+id/member"
-            app:layout_constraintTop_toBottomOf="@+id/address" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/person_member"
-            android:layout_width="60dp"
-            android:layout_height="40dp"
-            android:text="0"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/mapview_layout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.1"
-            app:layout_constraintStart_toEndOf="@+id/OK_member"
-            app:layout_constraintTop_toBottomOf="@+id/address" />
+            <TextView
+                android:id="@+id/member"
+                android:layout_width="60dp"
+                android:layout_height="40dp"
+                android:text="1"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.05"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.9" />
 
-        <Button
-            android:id="@+id/research"
-            android:layout_width="80dp"
-            android:layout_height="40dp"
-            android:text="검색"
-            android:textAlignment="center"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="@+id/address"
-            app:layout_constraintEnd_toEndOf="@+id/address"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="@+id/address"
-            app:layout_constraintTop_toTopOf="@+id/address"
-            fbutton:buttonColor="@color/fbutton_color_concrete"
-            fbutton:cornerRadius="5dp"
-            fbutton:shadowColor="@color/fbutton_color_asbestos"
-            fbutton:shadowEnabled="true"
-            fbutton:shadowHeight="5dp" />
+            <TextView
+                android:id="@+id/OK_member"
+                android:layout_width="60dp"
+                android:layout_height="40dp"
+                android:text="0"
+                android:textAlignment="viewStart"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/member"
+                app:layout_constraintStart_toEndOf="@+id/member"
+                app:layout_constraintTop_toTopOf="@+id/member" />
 
-        <Button
-            android:id="@+id/re_set"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="리셋"
-            app:layout_constraintBottom_toTopOf="@+id/mapview_layout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toEndOf="@+id/person_member"
-            app:layout_constraintTop_toBottomOf="@+id/address" />
+            <TextView
+                android:id="@+id/person_member"
+                android:layout_width="60dp"
+                android:layout_height="40dp"
+                android:text="0"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/OK_member"
+                app:layout_constraintStart_toEndOf="@+id/OK_member"
+                app:layout_constraintTop_toTopOf="@+id/OK_member" />
+
+            <Button
+                android:id="@+id/re_set"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="리셋"
+                app:layout_constraintBottom_toBottomOf="@+id/person_member"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.75"
+                app:layout_constraintStart_toEndOf="@+id/person_member"
+                app:layout_constraintTop_toTopOf="@+id/person_member" />
+
+            <Button
+                android:id="@+id/research"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="검색"
+                android:textAlignment="center"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toTopOf="@+id/re_set"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.75"
+                app:layout_constraintStart_toEndOf="@+id/person_member"
+                app:layout_constraintTop_toTopOf="parent"
+                fbutton:buttonColor="@color/fbutton_color_concrete"
+                fbutton:cornerRadius="5dp"
+                fbutton:shadowColor="@color/fbutton_color_asbestos"
+                fbutton:shadowEnabled="true"
+                fbutton:shadowHeight="5dp" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/mapview_layout"
-            android:layout_width="409dp"
-            android:layout_height="0dp"
+            android:layout_width="0dp"
+            android:layout_height="500dp"
             app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

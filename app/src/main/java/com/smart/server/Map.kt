@@ -10,29 +10,31 @@ import android.graphics.BitmapFactory
 import android.graphics.PointF
 import android.location.LocationManager
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.View
-import android.widget.LinearLayout
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
 import androidx.constraintlayout.motion.widget.Debug.getLocation
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.skt.Tmap.TMapData
 import com.skt.Tmap.TMapMarkerItem
 import com.skt.Tmap.TMapPoint
 import com.skt.Tmap.TMapView
+import com.skt.Tmap.TMapView.INVISIBLE
 import com.skt.Tmap.TMapView.OnClickListenerCallback
+import com.skt.Tmap.TMapView.VISIBLE
 import com.skt.Tmap.poi_item.TMapPOIItem
-import android.widget.Button
-import android.widget.EditText
-import androidx.appcompat.app.AlertDialog
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import android.os.Handler
-import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 
 
 class Map : Activity() {
@@ -44,9 +46,14 @@ class Map : Activity() {
     private val markerPoints = mutableListOf<TMapPoint>()
     private var resultPoints = mutableListOf<TMapPoint>()
     private lateinit var mapContainer: ConstraintLayout
+    private lateinit var address_layout: ConstraintLayout
+    private var re_data_check = "체크"
 
+    private lateinit var address_view: RecyclerView
+    private lateinit var profileList: ArrayList<Addressfiles>
+    private lateinit var adapter: AddressAdapter
     companion object {
-        private const val mApiKey = "zjkQPd0vuS2UlJ3m6oopv7PPv7wys4Qp4ifDlXCx" // SKT
+        private const val mApiKey = "NaawXpPLLm3oGRXVIUuuO5rV68T7Ad6yaSUFDjoZ" // SKT
     }
 
     fun resizeBitmap(bitmap: Bitmap, width: Int, height: Int): Bitmap {
@@ -59,39 +66,40 @@ class Map : Activity() {
 
         val person = intent.getStringExtra("person") ?: ""
         val person_member: TextView = findViewById(R.id.person_member)
-
         person_member.setText(person)
+
+        address_layout = findViewById(R.id.address_layout)
+        address_view = findViewById(R.id.address_view)
+        val research_button: Button = findViewById(R.id.research_button)
+        val address: EditText = findViewById(R.id.address)
 
         initializeMapView()
         waitGuest()
 
+        profileList = ArrayList()
+        adapter = AddressAdapter(profileList, this)
+        for (i in 1..profileList.size) {
+            profileList.add(Addressfiles(null, null, null))
+        }
+        address_view.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        address_view.setHasFixedSize(true)
+        address_view.adapter = adapter
+
         mContext = this
-        val address: EditText = findViewById(R.id.address)
         val research: Button = findViewById(R.id.research)
         val re_set: Button = findViewById(R.id.re_set)
 
-        val locCurrent = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-        val curLat: Double = locCurrent?.latitude ?: 0.0
-        val curLon: Double = locCurrent?.longitude ?: 0.0
-
-        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // 권한이 없는 경우 권한 요청 다이얼로그 표시
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                REQUEST_LOCATION_PERMISSION
-            )
-        } else {
-            // 권한이 이미 있는 경우 위치 정보를 가져올 수 있습니다.
-            getLocation()
-        }
+        address_layout.visibility = INVISIBLE
 
         val tmapdata = TMapData()
+
+        research.setOnClickListener {
+            if(address_layout.visibility == VISIBLE){
+                address_layout.visibility = INVISIBLE
+            }else{
+                address_layout.visibility = VISIBLE
+            }
+        }
 
         re_set.setOnClickListener {
             Log.d("초기화", "Reset button clicked.")
@@ -99,35 +107,22 @@ class Map : Activity() {
             initializeMapView() // Ensure this re-adds the map view and reconfigures listeners
         }
 
-        research.setOnClickListener {
+        research_button.setOnClickListener {
             val addressText = address.text?.toString() ?: ""
-            val get_result: MutableList<String> = mutableListOf()
+
             try {
-                tmapdata.findAllPOI(addressText, 10, object : TMapData.FindAllPOIListenerCallback {
+                tmapdata.findAllPOI(addressText, 50, object : TMapData.FindAllPOIListenerCallback {
                     override fun onFindAllPOI(p0: ArrayList<TMapPOIItem>?) {
                         p0?.let { poiItem ->
+                            profileList.clear()
                             for (i in 0 until poiItem.size) {
                                 val item = poiItem[i]
-                                Log.d(
-                                    "POI Name: ",
-                                    "${item.poiName}, " + "Address: ${
-                                        item.poiAddress.replace(
-                                            "null",
-                                            ""
-                                        )
-                                    }, " + "Point: ${item.poiPoint}"
-                                )
-                                get_result.add(
-                                    "${item.poiName}," + " ${
-                                        item.poiAddress.replace(
-                                            "null",
-                                            ""
-                                        )
-                                    } \n\n "
-                                )
+                                Log.d("지명 1",item.poiName)
+                                Log.d("지명 2",item.poiAddress.replace("null", ""))
+                                Log.d("지명 3", item.getPOIPoint().toString())
+                                profileList.add(Addressfiles(item.poiName, item.poiAddress.replace("null", ""), item.getPOIPoint()))
                             }
-                            val resultText = get_result.joinToString(separator = "")
-//                            result.setText(resultText)
+                            adapter.notifyDataSetChanged()
                         }
 
                     }
@@ -138,34 +133,16 @@ class Map : Activity() {
         }
 //         (장소API) 통합 검색 함수
 
-
-//        // POI 상세검색 함수
-//        try {
-//            tmapdata.findPOIDetailInfo(poiId, new TMapData.FindAllPOIListenerCallback() {
-//                @Override
-//                public void onFindAllPOI(ArrayList<TMapPOIItem> poiItem) {
-//                    mPoiItem = poiItem.get(0);
-//                    setTextLevel(MESSAGE_STATE_POI_DETAIL);
-//                }
-//            });
-//        } catch(Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-//}
         setupMapListeners(mMapView!!)
 
     }
-
-
-
 
     private val mDelayHandler: Handler by lazy {
         Handler()
     }
 
     fun waitGuest() {
-        mDelayHandler.postDelayed(::showGuest, 8000) // 8초 후에 showGuest 함수를 실행한다.
+        mDelayHandler.postDelayed(::showGuest, 5000) // 5초 후에 showGuest 함수를 실행한다.
     }
 
     private fun showGuest() {
@@ -182,6 +159,7 @@ class Map : Activity() {
         val roomCode = intent.getStringExtra("roomCode")
         val myCode: String = intent.getStringExtra("myCode") ?: ""
         val member: TextView = findViewById(R.id.member)
+        val OK_member: TextView = findViewById(R.id.OK_member)
 
         if (roomCode != null) {
             LoopService.requestLogin(0, roomCode, myCode).enqueue(object :
@@ -191,9 +169,9 @@ class Map : Activity() {
                     response: Response<Looping>
                 ) {     //응답값을 response.body로 받아옴
                     //웹 통신에 성공했을 때 실행. 응답값을 받아옴.
-                    val count = response.body()     //count
+                    val count = response.body()     //count, OK_count
                     member.text = count!!.count.toString()
-
+                    OK_member.text = count.OK_count.toString()
                 }
 
                 override fun onFailure(call: Call<Looping>, t: Throwable) {
@@ -276,7 +254,7 @@ class Map : Activity() {
     }
 
     fun waitGet() {
-        DDelayHandler.postDelayed(::showGet, 8000) // 8초 후에 showGuest 함수를 실행한다.
+        DDelayHandler.postDelayed(::showGet, 5000) // 5초 후에 showGuest 함수를 실행한다.
     }
 
     fun showGet() {
@@ -288,7 +266,8 @@ class Map : Activity() {
             .addConverterFactory(GsonConverterFactory.create())     //응답값 JSON 데이터를 객체로 변환
             .build()
 
-        val GetService = retrofit.create(Getservice::class.java)        //retrofit 객체를 만든 다음 create를 통해 서비스를 올려주면 loginService가 앞에서 정의한 INPUT OUTPUT을 가지고 서버를 호출할 수 있는 서비스 인터페이스가 된다.
+        val GetService =
+            retrofit.create(Getservice::class.java)        //retrofit 객체를 만든 다음 create를 통해 서비스를 올려주면 loginService가 앞에서 정의한 INPUT OUTPUT을 가지고 서버를 호출할 수 있는 서비스 인터페이스가 된다.
         val person = intent.getStringExtra("person") ?: ""
         val roomCode = intent.getStringExtra("roomCode") ?: ""
         val myCode: String = intent.getStringExtra("myCode") ?: ""
@@ -303,21 +282,19 @@ class Map : Activity() {
             ) {     //응답값을 response.body로 받아옴
                 val get = response.body()       //wait, data, count, OK_count
                 val re_data = get?.data.toString()
-                Log.d("안녕하세요",re_data)
                 member.text = get!!.count.toString()
                 OK_member.text = get.OK_count.toString()
 
-                if (get.wait != "1") {
+                if (get.wait != "1" && re_data_check != re_data) {
                     mMapView?.let { mapView ->
+                        Log.d("안녕하세요", re_data)
+                        re_data_check = re_data
                         Str_to_Tmap(re_data)
                         calculateRoute(resultPoints)
-                        placeMultipleMarkers(1, mapView, resultPoints)
-                        DDelayHandler.removeCallbacksAndMessages(null)
-                        waitGuest()
+                        placeMultipleMarkers(0, mapView, resultPoints)
                     }
                 }
             }
-
 
             override fun onFailure(call: Call<Get>, t: Throwable) {
             }
@@ -327,8 +304,7 @@ class Map : Activity() {
     }
 
 
-
-    private fun initializeMapView() {
+    fun initializeMapView() {
         point_count = 0
         // Ensure mapContainer is properly initialized
         mapContainer = findViewById(R.id.mapview_layout)
@@ -348,7 +324,6 @@ class Map : Activity() {
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             // 권한이 없는 경우 권한 요청 다이얼로그 표시
-            Log.d("GPSAccess", "Requesting GPS access")
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
@@ -356,19 +331,18 @@ class Map : Activity() {
             )
         } else {
             // 권한이 이미 있는 경우 위치 정보를 가져올 수 있습니다.
-            Log.d("GPSAccess", "GPS access already granted")
             getLocation()
-
         }
 
         val locCurrent = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
 
-        val curLat: Double = locCurrent?.latitude ?: 35.2340
-        val curLon: Double = locCurrent?.longitude ?: 129.0807
+        val curLat: Double = locCurrent?.latitude ?: 35.2315
+        val curLon: Double = locCurrent?.longitude ?: 129.0845
 
         mMapView!!.setCenterPoint(curLon, curLat)
 
         mapContainer.addView(mMapView)
+        Log.d("지도생성","지도")
 
         mMapView?.removeAllMarkerItem()
         mMapView?.removeTMapPolyLine("Route")
@@ -397,8 +371,8 @@ class Map : Activity() {
                 try {
                     val sharedPreferences: SharedPreferences = getSharedPreferences("pref", 0)
                     val IPnum = sharedPreferences.getString("IP_num", "0") ?: "0"
-                    val lat: Double = p2?.latitude ?: 0.0
-                    val lon: Double = p2?.longitude ?: 0.0
+                    val lat: Double = p2?.latitude ?: 35.2315
+                    val lon: Double = p2?.longitude ?: 129.0845
                     Log.d("MyApp", "선택한 위치의 주소는 " + lat + "\n" + lon)
 
                     fun addMarker(latitude: Double, longitude: Double) {
@@ -414,42 +388,56 @@ class Map : Activity() {
 
                     p2?.let { point ->
                         point_save.setOnClickListener(View.OnClickListener {
-                            if(markerPoints.size < 2) {
+                            if (markerPoints.size < 2) {
                                 markerPoints.add(point)
-                                if(markerPoints.size == 1){
-                                    reverseGeocodeLocation(mMapView, markerPoints[0]) { reverse_marker ->
+                                if (markerPoints.size == 1) {
+                                    reverseGeocodeLocation(
+                                        mMapView,
+                                        markerPoints[0]
+                                    ) { reverse_marker ->
                                         runOnUiThread {
                                             start.setText(reverse_marker)
                                         }
                                     }
-                                }else{
-                                    reverseGeocodeLocation(mMapView, markerPoints[1]) { reverse_marker ->
+                                } else {
+                                    reverseGeocodeLocation(
+                                        mMapView,
+                                        markerPoints[1]
+                                    ) { reverse_marker ->
                                         runOnUiThread {
                                             end.setText(reverse_marker)
                                         }
                                     }
                                 }
-                            }else {
+                            } else {
                                 if (point_count == 1) {
                                     markerPoints[1] = point
-                                    reverseGeocodeLocation(mMapView, markerPoints[1]) { reverse_marker ->
+                                    reverseGeocodeLocation(
+                                        mMapView,
+                                        markerPoints[1]
+                                    ) { reverse_marker ->
                                         runOnUiThread {
                                             end.setText(reverse_marker)
                                         }
                                     }
                                 } else {
                                     markerPoints[0] = point
-                                    reverseGeocodeLocation(mMapView, markerPoints[0]) { reverse_marker ->
+                                    reverseGeocodeLocation(
+                                        mMapView,
+                                        markerPoints[0]
+                                    ) { reverse_marker ->
                                         runOnUiThread {
                                             start.setText(reverse_marker)
                                         }
                                     }
                                 }
                             }
+
                             placeMultipleMarkers(0, mMapView, markerPoints)
-                            if(point_count > 0) {
+
+                            if (point_count > 0) {
                                 point_count = 0
-                            }else{
+                            } else {
                                 point_count += 1
                             }
                             calculateRoute(markerPoints)
@@ -462,7 +450,8 @@ class Map : Activity() {
                         .addConverterFactory(GsonConverterFactory.create())     //응답값 JSON 데이터를 객체로 변환
                         .build()
 
-                    var MapService = retrofit.create(MapService::class.java)        //retrofit 객체를 만든 다음 create를 통해 서비스를 올려주면 loginService가 앞에서 정의한 INPUT OUTPUT을 가지고 서버를 호출할 수 있는 서비스 인터페이스가 된다.
+                    var MapService =
+                        retrofit.create(MapService::class.java)        //retrofit 객체를 만든 다음 create를 통해 서비스를 올려주면 loginService가 앞에서 정의한 INPUT OUTPUT을 가지고 서버를 호출할 수 있는 서비스 인터페이스가 된다.
                     val person = intent.getStringExtra("person") ?: ""
                     val roomCode = intent.getStringExtra("roomCode") ?: ""
                     val myCode: String = intent.getStringExtra("myCode") ?: ""
@@ -511,14 +500,23 @@ class Map : Activity() {
 
 
     fun placeMultipleMarkers(ok: Int, mMapView: TMapView, locations: List<TMapPoint>) {
-        if(ok == 0){
+        if (ok == 0) {
             mMapView.removeAllMarkerItem()
         }
 
         locations.forEachIndexed { index, location ->
             val originalIcon = when {
                 index == 0 -> BitmapFactory.decodeResource(resources, R.drawable.start)
-                index == locations.lastIndex -> BitmapFactory.decodeResource(resources, R.drawable.end)
+                index == locations.lastIndex -> BitmapFactory.decodeResource(
+                    resources,
+                    R.drawable.end
+                )
+
+                index != 0 && index != locations.lastIndex && markerPoints.contains(location) -> BitmapFactory.decodeResource(
+                    resources,
+                    R.drawable.mypin
+                )
+
                 else -> BitmapFactory.decodeResource(resources, R.drawable.pin)
             }
 
@@ -535,6 +533,14 @@ class Map : Activity() {
                     1.0f
                 ) // Adjusts the anchor point to the middle-bottom of the icon
                 name = "Marker $index" // Optional: Set a name for each marker
+
+                reverseGeocodeLocation(mMapView, tMapPoint) { reverse_marker ->
+                    setCalloutSubTitle("위치: $reverse_marker")
+                }
+                setCalloutTitle("목적지 순서: $index")
+
+                setCanShowCallout(true)
+                setAutoCalloutVisible(true)
             }
             mMapView.addMarkerItem("Marker $index", marker)
         }
@@ -588,7 +594,8 @@ class Map : Activity() {
         }
     }
 
-    fun Str_to_Tmap(str: String){
+    fun Str_to_Tmap(str: String) {
+        resultPoints = mutableListOf()
         val points_String = str
         val pattern = "\\(([^,]+),\\s([^)]+)\\)".toRegex()
         val pointMatches = pattern.findAll(points_String)
@@ -602,12 +609,35 @@ class Map : Activity() {
 
     }
 
-    fun reverseGeocodeLocation(mMapView: TMapView, location: TMapPoint, callback: (String) -> Unit) {
+    fun reverseGeocodeLocation(
+        mMapView: TMapView,
+        location: TMapPoint,
+        callback: (String) -> Unit
+    ) {
         val tMapData = TMapData()
         tMapData.reverseGeocoding(location.latitude, location.longitude, "A03") { addressInfo ->
             val fullAddress = addressInfo.strFullAddress
             callback(fullAddress)
         }
+    }
+
+    fun Map_center(lat:Double,lon:Double){
+        point_count = 0
+        // Ensure mapContainer is properly initialized
+        mapContainer = findViewById(R.id.mapview_layout)
+
+        // Remove the existing TMapView if it exists
+        mMapView?.let { mapContainer.removeView(it) }
+        mMapView = TMapView(this)
+
+        mMapView!!.setSKTMapApiKey(mApiKey)
+        mMapView!!.zoomLevel = 20
+
+        mMapView!!.setCenterPoint(lat, lon)
+
+        mapContainer.addView(mMapView)
+        Log.d("지도생성","지도")
+
     }
 
 }
