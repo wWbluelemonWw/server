@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
@@ -30,10 +31,10 @@ class ProfileAdapter(
         val regionname = itemView.findViewById<TextView>(R.id.regionname)
         val cityname = itemView.findViewById<TextView>(R.id.cityname)
         val personname = itemView.findViewById<TextView>(R.id.personname)
-        val goButton = itemView.findViewById<Button>(R.id.Go)
+        val imageButton = itemView.findViewById<ImageButton>(R.id.Go)
 
         init {
-            goButton.setOnClickListener {
+            imageButton.setOnClickListener {
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
                     val profile = profileList[position]
@@ -55,7 +56,7 @@ class ProfileAdapter(
         holder.regionname.text = profileList.get(position).regionname
         holder.cityname.text = profileList.get(position).cityname
         holder.personname.text = profileList.get(position).personname
-
+        holder.imageButton.setImageResource(R.drawable.enter)
     }
 
     override fun getItemCount(): Int {
