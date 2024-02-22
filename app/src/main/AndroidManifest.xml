@@ -21,7 +21,7 @@
         android:theme="@style/Theme.Server"
         tools:targetApi="31">
         <activity
-            android:name=".Splash"
+            android:name=".Map"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -38,9 +38,9 @@
         <activity
             android:name=".MakeRoom"
             android:exported="true"/>
-        <activity
-            android:name=".Map"
-            android:exported="true"/>
+<!--        <activity-->
+<!--            android:name=".Map"-->
+<!--            android:exported="true"/>-->
         <activity
             android:name=".Room"
             android:exported="true"/>

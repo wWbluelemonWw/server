@@ -10,7 +10,8 @@ data class Mapping(
 )
 
 data class Looping(
-    var count : Int
+    var count : Int,
+    var OK_count: Int
 )
 
 data class Rooming(
