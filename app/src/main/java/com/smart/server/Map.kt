@@ -514,6 +514,8 @@ class Map : Activity() {
                                 ) {     //응답값을 response.body로 받아옴
                                     //웹 통신에 성공했을 때 실행. 응답값을 받아옴.
                                     var map = response.body()     //markerPoints
+                                    if (map?.markerPoints == "1")
+                                        Toast.makeText(this@Map,"거리가 멀어 취소되었습니다.",Toast.LENGTH_SHORT).show()
                                     cancelGet()
                                     getCode()
                                 }
