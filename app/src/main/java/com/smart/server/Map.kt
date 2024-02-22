@@ -7,6 +7,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.graphics.PointF
 import android.location.LocationManager
 import android.os.Bundle
@@ -25,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.skt.Tmap.TMapData
 import com.skt.Tmap.TMapMarkerItem
 import com.skt.Tmap.TMapPoint
+import com.skt.Tmap.TMapPolyLine
 import com.skt.Tmap.TMapView
 import com.skt.Tmap.TMapView.INVISIBLE
 import com.skt.Tmap.TMapView.OnClickListenerCallback
@@ -35,6 +37,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import kotlin.math.roundToInt
+import kotlin.time.measureTime
 
 
 class Map : Activity() {
@@ -49,7 +53,11 @@ class Map : Activity() {
     private lateinit var address_layout: ConstraintLayout
     private lateinit var check_layout: ConstraintLayout
     private var re_data_check = "체크"
+    private var bus_start = mutableListOf<TMapPoint>()
 
+    private var result_polyline: TMapPolyLine? = null
+    private var result_polyline_route: TMapPolyLine? = null
+    private var result_polyline_distance: TMapPolyLine? = null
     private lateinit var address_view: RecyclerView
     private lateinit var profileList: ArrayList<Addressfiles>
     private lateinit var adapter: AddressAdapter
@@ -279,6 +287,8 @@ class Map : Activity() {
         val OK_member: TextView = findViewById(R.id.OK_member)
         val reject_button: Button = findViewById(R.id.reject_button)
         val accept_button: Button = findViewById(R.id.accept_button)
+        val price: TextView = findViewById(R.id.price)
+        val price_txt: TextView = findViewById(R.id.price_txt)
 
         GetService.requestLogin(roomCode, myCode, person).enqueue(object :
             Callback<Get> {     //Retrofit을 사용해 서버로 요청을 보내고 응답을 처리. (서버에 textId/textPw를 보내고, enqueue로 응답 처리 콜백 정의)
@@ -298,6 +308,18 @@ class Map : Activity() {
                         Str_to_Tmap(re_data)
                         calculateRoute(resultPoints)
                         placeMultipleMarkers(0, mapView, resultPoints)
+
+
+                        calculateRoute_distance(markerPoints)
+                        Log.d("거리정보1",result_polyline?.distance.toString())
+                        price.setText("${result_polyline?.distance!!.roundToInt()}m")
+
+                        bus_start.add(resultPoints[0])
+                        bus_start.add(markerPoints[0])
+                        calculateRoute_distance(bus_start)
+                        Log.d("거리정보2",result_polyline?.distance.toString())
+                        price_txt.setText("${result_polyline?.distance!!.roundToInt()}m")
+
                         check_layout.visibility = VISIBLE
                         accept_button.setOnClickListener {
                             GetService.requestLogin(roomCode, myCode, person).enqueue(object : Callback<Get> {     //Retrofit을 사용해 서버로 요청을 보내고 응답을 처리. (서버에 textId/textPw를 보내고, enqueue로 응답 처리 콜백 정의)
@@ -618,6 +640,58 @@ class Map : Activity() {
             ) { polyLine ->
                 if (polyLine != null) {
                     mMapView!!.addTMapPolyLine("Route", polyLine)
+                    var result = tMapData.findPathData(startPoint, endPoint)
+                    result_polyline = polyLine
+
+                } else {
+                    Log.d("Navigation", "Unable to calculate route.")
+                    // Handle the error, such as informing the user that the route could not be calculated.
+                }
+            }
+        } else {
+            Log.d("Navigation", "Not enough markers to calculate a route.")
+            // Inform the user that they need to place more markers.
+        }
+    }
+
+    private fun calculateRoute_distance(markerPoints: List<TMapPoint>) {
+        if (markerPoints.size >= 2) { // Ensure there are at least two markers for a route
+            val tMapData = TMapData()
+
+            val startPoint = markerPoints.first()
+            val endPoint = markerPoints.last()
+            // If there are more than 2 markers, use the intermediate ones as waypoints
+            val waypoints = if (markerPoints.size > 2) markerPoints.subList(
+                1,
+                markerPoints.size - 1
+            ) else listOf()
+
+            // Logging the input points
+            Log.d(
+                "RouteCalculation",
+                "Starting point: ${startPoint.latitude}, ${startPoint.longitude}"
+            )
+            Log.d(
+                "RouteCalculation",
+                "Destination point: ${endPoint.latitude}, ${endPoint.longitude}"
+            )
+            waypoints.forEachIndexed { index, waypoint ->
+                Log.d(
+                    "RouteCalculation",
+                    "Waypoint $index: ${waypoint.latitude}, ${waypoint.longitude}"
+                )
+            }
+
+            tMapData.findPathDataWithType(
+                TMapData.TMapPathType.CAR_PATH,
+                startPoint,
+                endPoint,
+                ArrayList(waypoints),
+                0
+            ) { polyLine ->
+                if (polyLine != null) {
+                    result_polyline = polyLine
+
                 } else {
                     Log.d("Navigation", "Unable to calculate route.")
                     // Handle the error, such as informing the user that the route could not be calculated.
@@ -660,4 +734,22 @@ class Map : Activity() {
         mMapView!!.setCenterPoint(lat, lon)
     }
 
+    private fun filterPolyline(polyline: TMapPolyLine?, markerPoints: List<TMapPoint>): TMapPolyLine? {
+        if (polyline == null || markerPoints.isEmpty()) return null
+
+        val filteredLinePoint = mutableListOf<TMapPoint>()
+        polyline.linePoint.forEach { linePoint ->
+            if (markerPoints.any { it.latitude == linePoint.latitude && it.longitude == linePoint.longitude }) {
+                filteredLinePoint.add(linePoint)
+            }
+        }
+
+        val filteredPolyline = TMapPolyLine().apply {
+            lineColor = Color.RED // Adjust color as needed
+            lineWidth = 4f // Adjust width as needed
+            filteredLinePoint.forEach { addLinePoint(it) }
+        }
+
+        return filteredPolyline
+    }
 }
