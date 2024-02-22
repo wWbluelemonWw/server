@@ -47,6 +47,7 @@ class Map : Activity() {
     private var resultPoints = mutableListOf<TMapPoint>()
     private lateinit var mapContainer: ConstraintLayout
     private lateinit var address_layout: ConstraintLayout
+    private lateinit var check_layout: ConstraintLayout
     private var re_data_check = "체크"
 
     private lateinit var address_view: RecyclerView
@@ -69,10 +70,11 @@ class Map : Activity() {
         val person = intent.getStringExtra("person") ?: ""
         val person_member: TextView = findViewById(R.id.person_member)
         val set_txt: TextView = findViewById(R.id.set_txt)
-        set_txt.setText(region+" "+city)
+        set_txt.setText("지역: $region $city")
         person_member.setText(person)
 
         address_layout = findViewById(R.id.address_layout)
+        check_layout = findViewById(R.id.check_layout)
         address_view = findViewById(R.id.address_view)
         val research_button: Button = findViewById(R.id.research_button)
         val address: EditText = findViewById(R.id.address)
@@ -93,13 +95,11 @@ class Map : Activity() {
         val research: Button = findViewById(R.id.research)
         val re_set: Button = findViewById(R.id.re_set)
 
-        address_layout.visibility = INVISIBLE
-
         val tmapdata = TMapData()
 
         research.setOnClickListener {
             if(address_layout.visibility == VISIBLE){
-                address_layout.visibility = INVISIBLE
+                address_layout.visibility = View.GONE
             }else{
                 address_layout.visibility = VISIBLE
             }
@@ -277,6 +277,8 @@ class Map : Activity() {
         val myCode: String = intent.getStringExtra("myCode") ?: ""
         val member: TextView = findViewById(R.id.member)
         val OK_member: TextView = findViewById(R.id.OK_member)
+        val reject_button: Button = findViewById(R.id.reject_button)
+        val accept_button: Button = findViewById(R.id.accept_button)
 
         GetService.requestLogin(roomCode, myCode, person).enqueue(object :
             Callback<Get> {     //Retrofit을 사용해 서버로 요청을 보내고 응답을 처리. (서버에 textId/textPw를 보내고, enqueue로 응답 처리 콜백 정의)
@@ -296,6 +298,35 @@ class Map : Activity() {
                         Str_to_Tmap(re_data)
                         calculateRoute(resultPoints)
                         placeMultipleMarkers(0, mapView, resultPoints)
+                        check_layout.visibility = VISIBLE
+                        accept_button.setOnClickListener {
+                            GetService.requestLogin(roomCode, myCode, person).enqueue(object : Callback<Get> {     //Retrofit을 사용해 서버로 요청을 보내고 응답을 처리. (서버에 textId/textPw를 보내고, enqueue로 응답 처리 콜백 정의)
+                                override fun onResponse(
+                                    call: Call<Get>,
+                                    response: Response<Get>
+                                ) {
+
+                                }
+                                override fun onFailure(call: Call<Get>, t: Throwable) {
+
+                                }
+                            })
+                            check_layout.visibility = View.GONE
+                        }
+                        reject_button.setOnClickListener {
+                            GetService.requestLogin(roomCode, myCode, person).enqueue(object : Callback<Get> {     //Retrofit을 사용해 서버로 요청을 보내고 응답을 처리. (서버에 textId/textPw를 보내고, enqueue로 응답 처리 콜백 정의)
+                                override fun onResponse(
+                                    call: Call<Get>,
+                                    response: Response<Get>
+                                ) {
+
+                                }
+                                override fun onFailure(call: Call<Get>, t: Throwable) {
+
+                                }
+                            })
+                            check_layout.visibility = View.GONE
+                        }
                     }
                 }
             }

@@ -3,27 +3,36 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/background1">
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/set"
+        style="@style/CustomMaterialButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="세팅"
+        android:text="설정"
         android:textColor="@color/black"
+        app:icon="@drawable/setting"
+        app:iconTint="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.32"
-        app:layout_constraintStart_toEndOf="@+id/room"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.06999999" />
+        app:layout_constraintVertical_bias="0.468" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/room"
-        android:layout_width="199dp"
-        android:layout_height="178dp"
-        android:text="방만들기"
+        style="@style/CustomMaterialButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="방 들어가기"
         android:textColor="@color/black"
+        app:icon="@drawable/add"
+        app:iconTint="@color/black"
+        app:iconGravity="textTop"
+        app:iconSize="100dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

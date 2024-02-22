@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@drawable/background1"
     tools:context=".Room">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -17,30 +17,42 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/makeroom"
+        style="@style/CustomMaterialButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/makeroom"
-        android:textSize="18sp"
+        android:layout_margin="20dp"
+        android:drawableTint="@color/black"
+        android:text="방 생성"
         android:textColor="@color/black"
+        android:textSize="18sp"
+        app:icon="@drawable/create"
+        app:iconTint="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.16000003" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/setroom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/setroom"
-        android:textSize="15sp"
+        style="@style/CustomMaterialButton"
+        android:layout_width="48dp"
+        android:layout_height="44dp"
+        android:layout_marginBottom="45dp"
+        android:drawableTint="@color/black"
         android:textColor="@color/black"
-        app:layout_constraintBottom_toTopOf="@+id/makeroom"
+        app:icon="@drawable/reset"
+        app:iconTint="@color/black"
+        app:layout_constraintBottom_toTopOf="@+id/re_room"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.224"
         app:layout_constraintStart_toEndOf="@+id/makeroom"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/reset"
+        tools:srcCompat="@drawable/reset" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

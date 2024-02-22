@@ -2,8 +2,18 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.Server" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+         <item name="colorPrimary">@color/fbutton_color_clouds</item>
     </style>
 
     <style name="Theme.Server" parent="Base.Theme.Server" />
+    <style name="CustomMaterialButton" parent="Widget.MaterialComponents.Button">
+        <!-- Fill color for the button -->
+        <item name="backgroundTint">@color/fbutton_color_clouds</item>
+        <!-- Border color -->
+        <item name="strokeColor">@color/black</item>
+        <!-- Border width -->
+        <item name="strokeWidth">2dp</item>
+        <item name="cornerRadius">5dp</item>
+    </style>
+
 </resources>

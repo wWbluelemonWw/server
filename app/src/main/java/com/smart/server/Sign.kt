@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import retrofit2.Call
@@ -21,7 +22,7 @@ class Sign : AppCompatActivity() {
         val sharedPreferences: SharedPreferences = getSharedPreferences("pref", 0)
         val IPnum = sharedPreferences.getString("IP_num", "0") ?: "0"
 
-        val signup: Button = findViewById(R.id.signup)
+        val signup: ImageButton = findViewById(R.id.signup)
         val ID: EditText = findViewById(R.id.ID)
         val Password: EditText = findViewById(R.id.Password)
 

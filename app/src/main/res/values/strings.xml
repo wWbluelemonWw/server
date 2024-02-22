@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Server</string>
+    <string name="app_name">너만오면고</string>
     <string name="titlename">제목</string>
     <string name="regionname">시/도</string>
     <string name="cityname">군/구</string>

@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@drawable/background1">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/add_lay"
@@ -42,12 +43,17 @@
             app:layout_constraintTop_toBottomOf="@+id/Building"
             app:layout_constraintVertical_bias="0.050000012" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/mark_button"
-            android:layout_width="80dp"
-            android:layout_height="30dp"
+            style="@style/CustomMaterialButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
             android:text="이동"
-            android:textSize="8sp"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            app:icon="@drawable/forward"
+            app:iconTint="@color/black"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"

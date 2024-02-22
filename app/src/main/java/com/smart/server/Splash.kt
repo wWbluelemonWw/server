@@ -15,7 +15,7 @@ class Splash : AppCompatActivity() {
             val intent = Intent(applicationContext, Log::class.java)
             startActivity(intent)
             finish()
-        }, 1000) // 1초 있다 메인액티비티로
+        }, 1500) // 1초 있다 메인액티비티로
     }
 
     override fun onPause() {

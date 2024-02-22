@@ -8,9 +8,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/white"
     tools:context=".Map">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -19,76 +21,75 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/address_layout"
-            android:layout_width="250dp"
-            android:layout_height="match_parent"
-            android:background="#FFFFFF"
-            android:elevation="8dp"
+            android:id="@+id/check_layout"
+            android:layout_width="0dp"
+            android:layout_height="250dp"
+            android:elevation="12dp"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintStart_toStartOf="@+id/constraintLayout"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout3"
+            app:layout_constraintVertical_bias="1.0">
 
-            <EditText
-                android:id="@+id/address"
-                android:layout_width="150dp"
-                android:layout_height="60dp"
-                android:ems="10"
-                android:inputType="text"
-                android:text="지명"
-                fbutton:layout_constraintBottom_toBottomOf="parent"
-                fbutton:layout_constraintEnd_toEndOf="parent"
-                fbutton:layout_constraintHorizontal_bias="0.0"
-                fbutton:layout_constraintStart_toStartOf="parent"
-                fbutton:layout_constraintTop_toTopOf="parent"
-                fbutton:layout_constraintVertical_bias="0.0" />
+            <TextView
+                android:id="@+id/price_txt"
+                android:layout_width="120dp"
+                android:layout_height="30dp"
+                android:text="예상 가격"
+                android:textAlignment="center"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/reject_button"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.19999999" />
+
+            <TextView
+                android:id="@+id/price"
+                android:layout_width="120dp"
+                android:layout_height="28dp"
+                android:text="가격(원)"
+                android:textAlignment="center"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/price_txt"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/price_txt"
+                app:layout_constraintTop_toTopOf="@+id/price_txt" />
 
             <Button
-                android:id="@+id/research_button"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:text="검색"
-                android:textAlignment="center"
-                android:textSize="14sp"
-                fbutton:layout_constraintBottom_toBottomOf="@+id/address"
-                fbutton:layout_constraintEnd_toEndOf="parent"
-                fbutton:layout_constraintStart_toEndOf="@+id/address"
-                fbutton:layout_constraintTop_toTopOf="parent" />
+                android:id="@+id/reject_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="거절"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.25"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.9" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/address_view"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                fbutton:layout_constraintBottom_toBottomOf="parent"
-                fbutton:layout_constraintEnd_toEndOf="parent"
-                fbutton:layout_constraintStart_toStartOf="parent"
-                fbutton:layout_constraintTop_toBottomOf="@+id/address" />
-
+            <Button
+                android:id="@+id/accept_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="수락"
+                app:layout_constraintBottom_toBottomOf="@+id/reject_button"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.75"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/reject_button" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout3"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@+id/mapview_layout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/set_txt"
-                android:layout_width="240dp"
-                android:layout_height="30dp"
-                android:text="시/도"
-                android:textAlignment="center"
-                android:textColor="#000000"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@+id/member"
-                app:layout_constraintEnd_toStartOf="@+id/research"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/member"
-                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/member"
@@ -99,10 +100,10 @@
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.05"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/set_txt"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.9" />
+                app:layout_constraintVertical_bias="0.859" />
 
             <TextView
                 android:id="@+id/OK_member"
@@ -114,7 +115,8 @@
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/member"
                 app:layout_constraintStart_toEndOf="@+id/member"
-                app:layout_constraintTop_toTopOf="@+id/member" />
+                app:layout_constraintTop_toTopOf="@+id/member"
+                app:layout_constraintVertical_bias="0.0" />
 
             <TextView
                 android:id="@+id/person_member"
@@ -125,47 +127,126 @@
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/OK_member"
                 app:layout_constraintStart_toEndOf="@+id/OK_member"
-                app:layout_constraintTop_toTopOf="@+id/OK_member" />
+                app:layout_constraintTop_toTopOf="@+id/OK_member"
+                app:layout_constraintVertical_bias="1.0" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/re_set"
+                style="@style/CustomMaterialButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="리셋"
+                android:textColor="@color/black"
+                app:icon="@drawable/reset"
+                app:iconTint="@color/black"
                 app:layout_constraintBottom_toBottomOf="@+id/person_member"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.75"
+                app:layout_constraintHorizontal_bias="0.954"
                 app:layout_constraintStart_toEndOf="@+id/person_member"
-                app:layout_constraintTop_toTopOf="@+id/person_member" />
+                app:layout_constraintTop_toTopOf="@+id/person_member"
+                app:layout_constraintVertical_bias="0.0" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/research"
+                style="@style/CustomMaterialButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="검색"
                 android:textAlignment="center"
+                android:textColor="@color/black"
                 android:textSize="12sp"
+                app:icon="@drawable/search"
+                app:iconTint="@color/black"
+                app:cornerRadius="5dp"
+                android:elevation="4dp"
                 app:layout_constraintBottom_toTopOf="@+id/re_set"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.75"
+                app:layout_constraintHorizontal_bias="0.954"
                 app:layout_constraintStart_toEndOf="@+id/person_member"
                 app:layout_constraintTop_toTopOf="parent"
-                fbutton:buttonColor="@color/fbutton_color_concrete"
-                fbutton:cornerRadius="5dp"
-                fbutton:shadowColor="@color/fbutton_color_asbestos"
-                fbutton:shadowEnabled="true"
-                fbutton:shadowHeight="5dp" />
+                app:layout_constraintVertical_bias="1.0" />
+
+            <TextView
+                android:id="@+id/set_txt"
+                android:layout_width="240dp"
+                android:layout_height="50dp"
+                android:padding="8dp"
+                android:text="시/도"
+                android:textAlignment="viewStart"
+                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                android:textColor="#000000"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                tools:layout_editor_absoluteX="34dp"
+                tools:layout_editor_absoluteY="13dp"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/mapview_layout"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="500dp"
             app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/member">
+            app:layout_constraintTop_toBottomOf="@+id/member"
+            app:layout_constraintVertical_bias="0.0">
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/address_layout"
+            android:layout_width="250dp"
+            android:layout_height="match_parent"
+            android:background="#FFFFFF"
+            android:elevation="8dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <EditText
+                android:id="@+id/address"
+                android:layout_width="150dp"
+                android:layout_height="60dp"
+                android:ems="10"
+                android:hint="지명"
+                android:inputType="text"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/research_button"
+                style="@style/CustomMaterialButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:drawableTint="@color/black"
+                android:text="검색"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="10sp"
+                app:icon="@drawable/search"
+                app:iconTint="@color/black"
+                app:layout_constraintBottom_toBottomOf="@+id/address"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/address"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/address_view"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/address" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -178,79 +259,95 @@
             app:layout_constraintHorizontal_bias="0.496"
             app:layout_constraintStart_toStartOf="parent">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/point_save"
-                android:layout_width="120dp"
+                style="@style/CustomMaterialButton"
+                android:layout_width="100dp"
                 android:layout_height="50dp"
-                android:text="경로저장"
+                android:text="선택"
+                android:textColor="@color/black"
+                android:textSize="10sp"
+                app:icon="@drawable/marker"
+                app:iconTint="@color/black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintHorizontal_bias="0.98"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.13999999" />
+                app:layout_constraintVertical_bias="0.171" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/send"
-                android:layout_width="120dp"
+                style="@style/CustomMaterialButton"
+                android:layout_width="100dp"
                 android:layout_height="50dp"
-                android:text="확정"
+                android:text="전송"
+                android:textColor="@color/black"
+                app:icon="@drawable/send"
+                app:iconTint="@color/black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintHorizontal_bias="0.98"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/point_save" />
+                app:layout_constraintTop_toBottomOf="@+id/point_save"
+                app:layout_constraintVertical_bias="0.25" />
 
             <EditText
                 android:id="@+id/start"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ems="10"
+                android:focusableInTouchMode="false"
                 android:inputType="text"
                 android:textStyle="bold"
-                android:focusableInTouchMode="false"
                 app:layout_constraintBottom_toBottomOf="@+id/point_save"
                 app:layout_constraintEnd_toStartOf="@+id/point_save"
-                app:layout_constraintHorizontal_bias="0.9"
+                app:layout_constraintHorizontal_bias="0.777"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/point_save" />
+                app:layout_constraintTop_toTopOf="@+id/point_save"
+                app:layout_constraintVertical_bias="0.333" />
 
             <EditText
                 android:id="@+id/end"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ems="10"
+                android:focusableInTouchMode="false"
                 android:inputType="text"
                 android:textStyle="bold"
-                android:focusableInTouchMode="false"
                 app:layout_constraintBottom_toBottomOf="@+id/send"
                 app:layout_constraintEnd_toEndOf="@+id/start"
                 app:layout_constraintStart_toStartOf="@+id/start"
                 app:layout_constraintTop_toTopOf="@+id/send" />
 
-            <TextView
+            <ImageView
                 android:id="@+id/start_txt"
-                android:layout_width="60dp"
-                android:layout_height="40dp"
-                android:text="출발"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/start"
                 android:textAlignment="center"
                 android:textSize="24sp"
                 app:layout_constraintBottom_toBottomOf="@+id/start"
                 app:layout_constraintEnd_toStartOf="@+id/start"
+                app:layout_constraintHorizontal_bias="0.17"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/start" />
+                app:layout_constraintTop_toTopOf="@+id/start"
+                app:layout_constraintVertical_bias="0.0" />
 
-            <TextView
+            <ImageView
                 android:id="@+id/end_txt"
-                android:layout_width="60dp"
-                android:layout_height="40dp"
-                android:text="도착"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/end"
                 android:textAlignment="center"
                 android:textSize="24sp"
                 app:layout_constraintBottom_toBottomOf="@+id/end"
                 app:layout_constraintEnd_toStartOf="@+id/end"
+                app:layout_constraintHorizontal_bias="0.17"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/end" />
+                app:layout_constraintTop_toTopOf="@+id/end"
+                app:layout_constraintVertical_bias="0.0" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

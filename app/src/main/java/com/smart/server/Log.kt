@@ -22,6 +22,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import android.util.Log
+import android.widget.ImageButton
 
 class Log : AppCompatActivity() {
     private val REQUEST_LOCATION_PERMISSION = 1
@@ -53,7 +54,7 @@ class Log : AppCompatActivity() {
 
         val button: Button = findViewById(R.id.button)
         val sign: Button = findViewById(R.id.sign)
-        val setset: Button = findViewById(R.id.setset)
+        val setset: ImageButton = findViewById(R.id.setset)
         val editText: EditText = findViewById(R.id.editText)
         val editText2: EditText = findViewById(R.id.editText2)
 

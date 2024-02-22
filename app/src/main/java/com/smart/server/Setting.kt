@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 
 class Setting : AppCompatActivity() {
     lateinit var IP_num: EditText
@@ -13,7 +14,7 @@ class Setting : AppCompatActivity() {
         setContentView(R.layout.activity_setting)
         IP_num = findViewById(R.id.IP_num)
 
-        val save: Button = findViewById(R.id.save)
+        val save: ImageButton = findViewById(R.id.save)
         save.setOnClickListener {
             saveData()
             finish()

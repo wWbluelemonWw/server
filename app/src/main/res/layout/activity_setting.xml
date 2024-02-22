@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@drawable/background1"
     tools:context=".Setting">
 
     <EditText
@@ -21,10 +21,10 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.95"
+        app:layout_constraintHorizontal_bias="0.702"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.399" />
+        app:layout_constraintVertical_bias="0.409" />
 
     <TextView
         android:id="@+id/IPN"
@@ -37,19 +37,23 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/IP_num"
         app:layout_constraintEnd_toStartOf="@+id/IP_num"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/IP_num" />
 
-    <Button
+    <ImageButton
         android:id="@+id/save"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
         android:layout_marginBottom="20dp"
-        android:text="저장"
         android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/IP_num" />
+        app:layout_constraintTop_toBottomOf="@+id/IP_num"
+        app:layout_constraintVertical_bias="0.493"
+        app:srcCompat="@drawable/ok" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
