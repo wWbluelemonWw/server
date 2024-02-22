@@ -56,7 +56,9 @@ class Map : Activity() {
     private lateinit var address_layout: ConstraintLayout
     private lateinit var check_layout: ConstraintLayout
     private var re_data_check = "체크"
-    private var bus_start = mutableListOf<TMapPoint>()
+    private var my_real_markerPoints = mutableListOf<TMapPoint>()
+    private var my_Points = mutableListOf<TMapPoint>()
+    private var indice = 0
 
     private var result_polyline: TMapPolyLine? = null
     private var result_polyline_route: TMapPolyLine? = null
@@ -309,7 +311,7 @@ class Map : Activity() {
                         Log.d("안녕하세요", re_data)
                         re_data_check = re_data
                         Str_to_Tmap(re_data)
-                        calculateRoute(resultPoints, markerPoints)
+                        calculateRoute(resultPoints, my_real_markerPoints)
                         placeMultipleMarkers(0, mapView, resultPoints)
 
 
@@ -527,6 +529,8 @@ class Map : Activity() {
                                 ) {     //응답값을 response.body로 받아옴
                                     //웹 통신에 성공했을 때 실행. 응답값을 받아옴.
                                     var map = response.body()     //markerPoints
+//                                    Str_to_Tmap2(map!!.markerPoints)
+//                                    my_real_markerPoints = my_Points
                                     cancelGet()
                                     getCode()
                                 }
@@ -645,75 +649,43 @@ class Map : Activity() {
             ) { polyLine ->
                 if (polyLine != null) {
                     mMapView!!.addTMapPolyLine("Route", polyLine)
-                    Log.d("로그용",polyLine.distance.toString())
+                    Log.d("로그용1",polyLine.distance.toString())
 
                 }
             }
 
-            for (i in 0 until markerPoints.size - 1)
-                tMapData.findPathDataWithType(
-                    TMapData.TMapPathType.CAR_PATH,
-                    markerPoints[i],
-                    markerPoints[i+1],
-                    ArrayList(waypoints),
-                    0
-                ) { polyLine ->
-                    if (polyLine != null) {
-                        Log.d("로그용",polyLine.distance.toString())
-
-                    }
-                }
+//            for (i in 0 until markerPoints.size - 1)
+//                tMapData.findPathDataWithType(
+//                    TMapData.TMapPathType.CAR_PATH,
+//                    markerPoints[i],
+//                    markerPoints[i+1],
+//                    ArrayList(waypoints),
+//                    0
+//                ) { polyLine ->
+//                    if (polyLine != null) {
+//                        Log.d("로그용2",polyLine.distance.toString())
+//                        for(k in 0 until markerPoints.size)
+//                            if(myStartPoint==markerPoints[k])
+//                                indice = k
+//
+//                        tMapData.findPathDataWithType(
+//                            TMapData.TMapPathType.CAR_PATH,
+//                            startPoint,
+//                            endPoint,
+//                            ArrayList(waypoints),
+//                            0
+//                        ) { polyLine2 ->
+//                            if (polyLine2 != null) {
+//                                Log.d("정류장 출발지",polyLine2.distance.toString())
+//                                Log.d("정류장 출발지",indice.toString())
+//
+//                            }
+//                        }
+//                    }
+//                }
         }
     }
 
-    private fun calculateRoute_distance(markerPoints: List<TMapPoint>) {
-        if (markerPoints.size >= 2) { // Ensure there are at least two markers for a route
-            val tMapData = TMapData()
-
-            val startPoint = markerPoints.first()
-            val endPoint = markerPoints.last()
-            // If there are more than 2 markers, use the intermediate ones as waypoints
-            val waypoints = if (markerPoints.size > 2) markerPoints.subList(
-                1,
-                markerPoints.size - 1
-            ) else listOf()
-
-            // Logging the input points
-            Log.d(
-                "RouteCalculation",
-                "Starting point: ${startPoint.latitude}, ${startPoint.longitude}"
-            )
-            Log.d(
-                "RouteCalculation",
-                "Destination point: ${endPoint.latitude}, ${endPoint.longitude}"
-            )
-            waypoints.forEachIndexed { index, waypoint ->
-                Log.d(
-                    "RouteCalculation",
-                    "Waypoint $index: ${waypoint.latitude}, ${waypoint.longitude}"
-                )
-            }
-
-            tMapData.findPathDataWithType(
-                TMapData.TMapPathType.CAR_PATH,
-                startPoint,
-                endPoint,
-                ArrayList(waypoints),
-                0
-            ) { polyLine ->
-                if (polyLine != null) {
-                    result_polyline = polyLine
-
-                } else {
-                    Log.d("Navigation", "Unable to calculate route.")
-                    // Handle the error, such as informing the user that the route could not be calculated.
-                }
-            }
-        } else {
-            Log.d("Navigation", "Not enough markers to calculate a route.")
-            // Inform the user that they need to place more markers.
-        }
-    }
 
     fun Str_to_Tmap(str: String) {
         resultPoints = mutableListOf()
@@ -727,7 +699,20 @@ class Map : Activity() {
             val point = TMapPoint(latitude, longitude)
             resultPoints.add(point)
         }
+    }
 
+    fun Str_to_Tmap2(str: String) {
+        my_Points = mutableListOf()
+        val points_String = str
+        val pattern = "\\(([^,]+),\\s([^)]+)\\)".toRegex()
+        val pointMatches = pattern.findAll(points_String)
+
+        for (match in pointMatches) {
+            val latitude = match.groupValues[1].toDouble()
+            val longitude = match.groupValues[2].toDouble()
+            val point = TMapPoint(latitude, longitude)
+            my_Points.add(point)
+        }
     }
 
     fun reverseGeocodeLocation(
@@ -746,22 +731,4 @@ class Map : Activity() {
         mMapView!!.setCenterPoint(lat, lon)
     }
 
-    private fun filterPolyline(polyline: TMapPolyLine?, markerPoints: List<TMapPoint>): TMapPolyLine? {
-        if (polyline == null || markerPoints.isEmpty()) return null
-
-        val filteredLinePoint = mutableListOf<TMapPoint>()
-        polyline.linePoint.forEach { linePoint ->
-            if (markerPoints.any { it.latitude == linePoint.latitude && it.longitude == linePoint.longitude }) {
-                filteredLinePoint.add(linePoint)
-            }
-        }
-
-        val filteredPolyline = TMapPolyLine().apply {
-            lineColor = Color.RED // Adjust color as needed
-            lineWidth = 4f // Adjust width as needed
-            filteredLinePoint.forEach { addLinePoint(it) }
-        }
-
-        return filteredPolyline
-    }
 }
