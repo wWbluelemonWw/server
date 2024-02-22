@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#B9E882"
+    android:background="@color/white"
     tools:context=".Room">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -21,7 +21,9 @@
         android:id="@+id/makeroom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="방만들기"
+        android:text="@string/makeroom"
+        android:textSize="18sp"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -32,11 +34,35 @@
         android:id="@+id/setroom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="룸리셋"
+        android:text="@string/setroom"
+        android:textSize="15sp"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toTopOf="@+id/makeroom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/makeroom"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/button_makeroom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/black"
+        android:textSize="18sp"
+        android:textColor="@color/black"
+        android:clickable="true"
+        android:drawableStart="@drawable/enter"
+        android:focusable="true"
+        android:gravity="center"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:text="@string/makeroom"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.499"
+        app:rippleColor="@color/white" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

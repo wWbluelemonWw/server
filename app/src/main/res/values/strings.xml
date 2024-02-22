@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Server</string>
+    <string name="titlename">제목</string>
+    <string name="regionname">시/도</string>
+    <string name="cityname">군/구</string>
+    <string name="personname">인원수</string>
+    <string name="makeroom">방 생성</string>
+    <string name="setroom">방 리셋</string>
+
 </resources>
