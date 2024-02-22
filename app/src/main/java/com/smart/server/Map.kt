@@ -68,8 +68,8 @@ class Map : Activity() {
         val city = intent.getStringExtra("city") ?: ""
         val person = intent.getStringExtra("person") ?: ""
         val person_member: TextView = findViewById(R.id.person_member)
-        val region_txt: TextView = findViewById(R.id.region_txt)
-        region_txt.setText(region+" "+city)
+        val set_txt: TextView = findViewById(R.id.set_txt)
+        set_txt.setText(region+" "+city)
         person_member.setText(person)
 
         address_layout = findViewById(R.id.address_layout)

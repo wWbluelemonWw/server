@@ -76,7 +76,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                android:id="@+id/region_txt"
+                android:id="@+id/set_txt"
                 android:layout_width="240dp"
                 android:layout_height="30dp"
                 android:text="시/도"
