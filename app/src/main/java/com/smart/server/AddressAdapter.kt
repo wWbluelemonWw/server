@@ -49,9 +49,6 @@ class AddressAdapter(
                     val lat = profile.Point?.latitude ?: 0.0 // 기본값은 0.0
                     val lon = profile.Point?.longitude ?: 0.0 // 기본값은 0.0
                     (context as Map).Map_center(lon, lat)
-
-//                    val intent = Intent(itemView.context, Map::class.java)
-//                    itemView.context.startActivity(intent)
                 }
             }
         }
