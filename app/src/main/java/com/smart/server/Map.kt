@@ -7,7 +7,6 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Color
 import android.graphics.PointF
 import android.location.LocationManager
 import android.os.Bundle
@@ -17,6 +16,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.constraintlayout.motion.widget.Debug.getLocation
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
@@ -37,11 +37,6 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import kotlin.math.roundToInt
-import javax.xml.parsers.DocumentBuilderFactory
-import org.w3c.dom.Element
-
-
-
 
 
 class Map : Activity() {
@@ -58,7 +53,7 @@ class Map : Activity() {
     private var re_data_check = "체크"
     private var my_real_markerPoints = mutableListOf<TMapPoint>()
     private var my_Points = mutableListOf<TMapPoint>()
-    private var indice = 0
+    private var TOT = 0
 
     private var result_polyline: TMapPolyLine? = null
     private var result_polyline_route: TMapPolyLine? = null
@@ -283,8 +278,8 @@ class Map : Activity() {
             .addConverterFactory(GsonConverterFactory.create())     //응답값 JSON 데이터를 객체로 변환
             .build()
 
-        val GetService =
-            retrofit.create(Getservice::class.java)        //retrofit 객체를 만든 다음 create를 통해 서비스를 올려주면 loginService가 앞에서 정의한 INPUT OUTPUT을 가지고 서버를 호출할 수 있는 서비스 인터페이스가 된다.
+        val GetService = retrofit.create(Getservice::class.java)        //retrofit 객체를 만든 다음 create를 통해 서비스를 올려주면 loginService가 앞에서 정의한 INPUT OUTPUT을 가지고 서버를 호출할 수 있는 서비스 인터페이스가 된다.
+        val AcceptService = retrofit.create(Acceptservice::class.java)
         val person = intent.getStringExtra("person") ?: ""
         val roomCode = intent.getStringExtra("roomCode") ?: ""
         val myCode: String = intent.getStringExtra("myCode") ?: ""
@@ -292,8 +287,6 @@ class Map : Activity() {
         val OK_member: TextView = findViewById(R.id.OK_member)
         val reject_button: Button = findViewById(R.id.reject_button)
         val accept_button: Button = findViewById(R.id.accept_button)
-        val price: TextView = findViewById(R.id.price)
-        val price_txt: TextView = findViewById(R.id.price_txt)
 
         GetService.requestLogin(roomCode, myCode, person).enqueue(object :
             Callback<Get> {     //Retrofit을 사용해 서버로 요청을 보내고 응답을 처리. (서버에 textId/textPw를 보내고, enqueue로 응답 처리 콜백 정의)
@@ -311,48 +304,41 @@ class Map : Activity() {
                         Log.d("안녕하세요", re_data)
                         re_data_check = re_data
                         Str_to_Tmap(re_data)
-                        calculateRoute(resultPoints, my_real_markerPoints)
+
+                        calculateRoute(resultPoints)
+
                         placeMultipleMarkers(0, mapView, resultPoints)
-
-
-//                        calculateRoute_distance(markerPoints)
-//                        Log.d("거리정보1",result_polyline?.distance.toString())
-//                        price.setText("${result_polyline?.distance!!.roundToInt()}m")
-//
-//                        bus_start.add(resultPoints[0])
-//                        bus_start.add(markerPoints[0])
-//                        calculateRoute_distance(bus_start)
-//                        Log.d("거리정보2",result_polyline?.distance.toString())
-//                        price_txt.setText("${result_polyline?.distance!!.roundToInt()}m")
 
                         check_layout.visibility = VISIBLE
                         accept_button.setOnClickListener {
-                            GetService.requestLogin(roomCode, myCode, person).enqueue(object : Callback<Get> {     //Retrofit을 사용해 서버로 요청을 보내고 응답을 처리. (서버에 textId/textPw를 보내고, enqueue로 응답 처리 콜백 정의)
+                            AcceptService.requestLogin(1).enqueue(object : Callback<Accept> {     //Retrofit을 사용해 서버로 요청을 보내고 응답을 처리. (서버에 textId/textPw를 보내고, enqueue로 응답 처리 콜백 정의)
                                 override fun onResponse(
-                                    call: Call<Get>,
-                                    response: Response<Get>
+                                    call: Call<Accept>,
+                                    response: Response<Accept>
                                 ) {
+                                    Toast.makeText(this@Map, "모든 인원이 모였습니다. 버스출발~~!!", Toast.LENGTH_SHORT).show()
 
                                 }
-                                override fun onFailure(call: Call<Get>, t: Throwable) {
+                                override fun onFailure(call: Call<Accept>, t: Throwable) {
 
                                 }
                             })
                             check_layout.visibility = View.GONE
                         }
                         reject_button.setOnClickListener {
-                            GetService.requestLogin(roomCode, myCode, person).enqueue(object : Callback<Get> {     //Retrofit을 사용해 서버로 요청을 보내고 응답을 처리. (서버에 textId/textPw를 보내고, enqueue로 응답 처리 콜백 정의)
+                            AcceptService.requestLogin(0).enqueue(object : Callback<Accept> {     //Retrofit을 사용해 서버로 요청을 보내고 응답을 처리. (서버에 textId/textPw를 보내고, enqueue로 응답 처리 콜백 정의)
                                 override fun onResponse(
-                                    call: Call<Get>,
-                                    response: Response<Get>
+                                    call: Call<Accept>,
+                                    response: Response<Accept>
                                 ) {
 
                                 }
-                                override fun onFailure(call: Call<Get>, t: Throwable) {
+                                override fun onFailure(call: Call<Accept>, t: Throwable) {
 
                                 }
                             })
                             check_layout.visibility = View.GONE
+                            finish()
                         }
                     }
                 }
@@ -502,7 +488,7 @@ class Map : Activity() {
                             } else {
                                 point_count += 1
                             }
-                            calculateRoute(markerPoints, markerPoints)
+                            calculateRoute(markerPoints)
 
                         })
                     }
@@ -529,8 +515,8 @@ class Map : Activity() {
                                 ) {     //응답값을 response.body로 받아옴
                                     //웹 통신에 성공했을 때 실행. 응답값을 받아옴.
                                     var map = response.body()     //markerPoints
-//                                    Str_to_Tmap2(map!!.markerPoints)
-//                                    my_real_markerPoints = my_Points
+                                    Str_to_Tmap2(map!!.markerPoints)
+                                    my_real_markerPoints = my_Points
                                     cancelGet()
                                     getCode()
                                 }
@@ -610,14 +596,16 @@ class Map : Activity() {
         }
     }
 
-    private fun calculateRoute(markerPoints: List<TMapPoint>, myPoints: List<TMapPoint>) {
+    private fun calculateRoute(markerPoints: List<TMapPoint>) {
+        TOT = 0
+        val price: TextView = findViewById(R.id.price)
+        val distance: TextView = findViewById(R.id.distance)
+        val time: TextView = findViewById(R.id.time)
         if (markerPoints.size >= 2) { // Ensure there are at least two markers for a route
             val tMapData = TMapData()
-
             val startPoint = markerPoints.first()
             val endPoint = markerPoints.last()
-            val myStartPoint = myPoints.first()
-            val myEndPoint = myPoints.last()
+
             // If there are more than 2 markers, use the intermediate ones as waypoints
             val waypoints = if (markerPoints.size > 2) markerPoints.subList(
                 1,
@@ -650,39 +638,35 @@ class Map : Activity() {
                 if (polyLine != null) {
                     mMapView!!.addTMapPolyLine("Route", polyLine)
                     Log.d("로그용1",polyLine.distance.toString())
-
                 }
             }
 
-//            for (i in 0 until markerPoints.size - 1)
-//                tMapData.findPathDataWithType(
-//                    TMapData.TMapPathType.CAR_PATH,
-//                    markerPoints[i],
-//                    markerPoints[i+1],
-//                    ArrayList(waypoints),
-//                    0
-//                ) { polyLine ->
-//                    if (polyLine != null) {
-//                        Log.d("로그용2",polyLine.distance.toString())
-//                        for(k in 0 until markerPoints.size)
-//                            if(myStartPoint==markerPoints[k])
-//                                indice = k
-//
-//                        tMapData.findPathDataWithType(
-//                            TMapData.TMapPathType.CAR_PATH,
-//                            startPoint,
-//                            endPoint,
-//                            ArrayList(waypoints),
-//                            0
-//                        ) { polyLine2 ->
-//                            if (polyLine2 != null) {
-//                                Log.d("정류장 출발지",polyLine2.distance.toString())
-//                                Log.d("정류장 출발지",indice.toString())
-//
-//                            }
-//                        }
-//                    }
-//                }
+            for (i in 0 until markerPoints.size - 1) {
+                tMapData.findPathDataWithType(
+                    TMapData.TMapPathType.CAR_PATH,
+                    markerPoints[i],
+                    markerPoints[i + 1],
+                    ArrayList(waypoints),
+                    0
+                ) { polyLine ->
+                    if (polyLine != null) {
+                        Log.d("로그용2", polyLine.distance.toString())
+                        TOT = TOT + polyLine.distance.roundToInt()
+
+
+                    }
+                }
+                Log.d("정류장 총 거리",TOT.toString())
+                val Price_num = (TOT / 1000 * 500)
+                val Distance_num = (TOT / 1000)
+                val Time_num = TOT
+
+                price.setText("$Price_num 원")
+                distance.setText("$Distance_num m")
+                time.setText("$Time_num 분")
+
+            }
+
         }
     }
 

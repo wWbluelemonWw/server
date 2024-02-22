@@ -35,3 +35,7 @@ data class Get(
     var count : Int,
     var OK_count : Int
 )
+
+data class Accept(
+    val GO_BUS : String
+)
