@@ -24,6 +24,7 @@
             android:id="@+id/check_layout"
             android:layout_width="0dp"
             android:layout_height="250dp"
+            android:background="@color/fbutton_color_clouds"
             android:elevation="12dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -58,11 +59,15 @@
                 app:layout_constraintStart_toEndOf="@+id/price_txt"
                 app:layout_constraintTop_toTopOf="@+id/price_txt" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/reject_button"
+                style="@style/CustomMaterialButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="거절"
+                android:textColor="@color/black"
+                app:icon="@drawable/no"
+                app:iconTint="@color/black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.25"
@@ -70,11 +75,15 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.9" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/accept_button"
+                style="@style/CustomMaterialButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="수락"
+                android:textColor="@color/black"
+                app:icon="@drawable/check"
+                app:iconTint="@color/black"
                 app:layout_constraintBottom_toBottomOf="@+id/reject_button"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.75"
@@ -190,7 +199,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/member"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout3"
             app:layout_constraintVertical_bias="0.0">
 
         </androidx.constraintlayout.widget.ConstraintLayout>
