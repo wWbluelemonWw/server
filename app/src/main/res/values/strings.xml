@@ -6,5 +6,6 @@
     <string name="personname">인원수</string>
     <string name="makeroom">방 생성</string>
     <string name="setroom">방 리셋</string>
+    <string name="지명">지명</string>
 
 </resources>

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#B9E882"
+    android:background="@color/white"
     tools:context=".MakeRoom">
 
     <EditText
@@ -14,7 +14,7 @@
         android:ems="10"
         android:imeOptions="flagNoExtractUi"
         android:text="0"
-        android:textColor="#020202"
+        android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold"
         android:enabled="false"
@@ -55,7 +55,7 @@
         app:layout_constraintEnd_toEndOf="@+id/title_num"
         app:layout_constraintStart_toStartOf="@+id/title_num"
         app:layout_constraintTop_toBottomOf="@+id/title_num"
-        app:layout_constraintVertical_bias="0.050000012" />
+        app:layout_constraintVertical_bias="0.057" />
 
     <Spinner
         android:id="@+id/city_num"
@@ -67,9 +67,10 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/region_num"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/region_num"
         app:layout_constraintTop_toBottomOf="@+id/region_num"
-        app:layout_constraintVertical_bias="0.050000012" />
+        app:layout_constraintVertical_bias="0.059" />
 
     <TextView
         android:id="@+id/person"
@@ -88,7 +89,7 @@
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="제목"
+        android:text="@string/titlename"
         android:textColor="#000000"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -102,8 +103,8 @@
         android:id="@+id/region"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="시/도"
-        android:textColor="#000000"
+        android:text="@string/regionname"
+        android:textColor="@color/black"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/region_num"
@@ -118,6 +119,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
         android:text="저장"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -128,8 +130,8 @@
         android:id="@+id/city"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="군/구"
-        android:textColor="#000000"
+        android:text="@string/cityname"
+        android:textColor="@color/black"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/city_num"
