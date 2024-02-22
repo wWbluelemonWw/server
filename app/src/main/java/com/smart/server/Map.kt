@@ -64,8 +64,14 @@ class Map : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
 
+        val region = intent.getStringExtra("region") ?: ""
+        val city = intent.getStringExtra("city") ?: ""
         val person = intent.getStringExtra("person") ?: ""
         val person_member: TextView = findViewById(R.id.person_member)
+        val region_txt: TextView = findViewById(R.id.region_txt)
+        val city_txt: TextView = findViewById(R.id.city_txt)
+        region_txt.setText(region)
+        city_txt.setText(city)
         person_member.setText(person)
 
         address_layout = findViewById(R.id.address_layout)

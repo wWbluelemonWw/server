@@ -121,6 +121,8 @@ class MakeRoom : Activity() {
 
         val intent = Intent(this, com.smart.server.Map::class.java)
         val myCode : String = MakeRoom().generateRandomString(8)
+        intent.putExtra("region", region)
+        intent.putExtra("city", city)
         intent.putExtra("person", person)
         intent.putExtra("myCode", myCode)
         intent.putExtra("roomCode", roomCode)

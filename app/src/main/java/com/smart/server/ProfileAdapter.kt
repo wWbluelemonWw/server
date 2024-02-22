@@ -39,6 +39,8 @@ class ProfileAdapter(
                     val profile = profileList[position]
                     val intent = Intent(itemView.context, Map::class.java)
                     val myCode : String = MakeRoom().generateRandomString(8)
+                    intent.putExtra("region", profile.regionname)
+                    intent.putExtra("city", profile.cityname)
                     intent.putExtra("person", profile.personname)
                     intent.putExtra("myCode", myCode)
                     intent.putExtra("roomCode", profile.roomCode)
