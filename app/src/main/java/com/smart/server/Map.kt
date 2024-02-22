@@ -69,9 +69,7 @@ class Map : Activity() {
         val person = intent.getStringExtra("person") ?: ""
         val person_member: TextView = findViewById(R.id.person_member)
         val region_txt: TextView = findViewById(R.id.region_txt)
-        val city_txt: TextView = findViewById(R.id.city_txt)
-        region_txt.setText(region)
-        city_txt.setText(city)
+        region_txt.setText(region+" "+city)
         person_member.setText(person)
 
         address_layout = findViewById(R.id.address_layout)
@@ -628,22 +626,7 @@ class Map : Activity() {
     }
 
     fun Map_center(lat:Double,lon:Double){
-        point_count = 0
-        // Ensure mapContainer is properly initialized
-        mapContainer = findViewById(R.id.mapview_layout)
-
-        // Remove the existing TMapView if it exists
-        mMapView?.let { mapContainer.removeView(it) }
-        mMapView = TMapView(this)
-
-        mMapView!!.setSKTMapApiKey(mApiKey)
-        mMapView!!.zoomLevel = 20
-
         mMapView!!.setCenterPoint(lat, lon)
-
-        mapContainer.addView(mMapView)
-        Log.d("지도생성","지도")
-
     }
 
 }
