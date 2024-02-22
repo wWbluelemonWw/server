@@ -653,18 +653,16 @@ class Map : Activity() {
                         Log.d("로그용2", polyLine.distance.toString())
                         TOT = TOT + polyLine.distance.roundToInt()
 
+                        Log.d("정류장 총 거리",TOT.toString())
+                        val Price_num = (TOT / 1000 * 500)
+                        val Distance_num = (TOT / 1000)
+                        val Time_num = TOT
 
+                        price.setText("$Price_num 원")
+                        distance.setText("$Distance_num m")
+                        time.setText("$Time_num 분")
                     }
                 }
-                Log.d("정류장 총 거리",TOT.toString())
-                val Price_num = (TOT / 1000 * 500)
-                val Distance_num = (TOT / 1000)
-                val Time_num = TOT
-
-                price.setText("$Price_num 원")
-                distance.setText("$Distance_num m")
-                time.setText("$Time_num 분")
-
             }
 
         }
