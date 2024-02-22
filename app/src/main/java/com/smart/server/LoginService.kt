@@ -88,7 +88,9 @@ interface Acceptservice{
     @POST("/app_accept/")           //이게 어떤 통신인지 설명해줘야 함 ("루트 url 다음에 있는 url 입력)
     fun requestLogin(
         //인풋을 정의하는 곳
-        @Field("accept") accept:Int
+        @Field("accept") accept:String,
+        @Field("roomCode") roomCode:String,
+        @Field("myCode") myCode:String
 
         ) : Call<Accept> //아웃풋을 정의하는 곳 <OUTPUT>
 }

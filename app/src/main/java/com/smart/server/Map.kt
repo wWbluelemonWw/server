@@ -298,8 +298,10 @@ class Map : Activity() {
                 val re_data = get?.data.toString()
                 member.text = get!!.count.toString()
                 OK_member.text = get.OK_count.toString()
-
-                if (get.wait != "1" && re_data_check != re_data) {
+                if (get.wait == "2"){
+                    Toast.makeText(this@Map,re_data,Toast.LENGTH_SHORT).show()
+                }
+                else if (get.wait == "0" && re_data_check != re_data) {
                     mMapView?.let { mapView ->
                         Log.d("안녕하세요", re_data)
                         re_data_check = re_data
@@ -311,12 +313,10 @@ class Map : Activity() {
 
                         check_layout.visibility = VISIBLE
                         accept_button.setOnClickListener {
-                            AcceptService.requestLogin(1).enqueue(object : Callback<Accept> {     //Retrofit을 사용해 서버로 요청을 보내고 응답을 처리. (서버에 textId/textPw를 보내고, enqueue로 응답 처리 콜백 정의)
-                                override fun onResponse(
-                                    call: Call<Accept>,
-                                    response: Response<Accept>
-                                ) {
-                                    Toast.makeText(this@Map, "모든 인원이 모였습니다. 버스출발~~!!", Toast.LENGTH_SHORT).show()
+                            AcceptService.requestLogin("1", roomCode, myCode).enqueue(object : Callback<Accept> {     //Retrofit을 사용해 서버로 요청을 보내고 응답을 처리. (서버에 textId/textPw를 보내고, enqueue로 응답 처리 콜백 정의)
+                                override fun onResponse(call: Call<Accept>, response: Response<Accept>) {
+                                    val accept = response.body() //GO_BUS
+                                    Toast.makeText(this@Map, "수락하였습니다. 곧 버스가 출발합니다!!", Toast.LENGTH_SHORT).show()
 
                                 }
                                 override fun onFailure(call: Call<Accept>, t: Throwable) {
@@ -326,7 +326,7 @@ class Map : Activity() {
                             check_layout.visibility = View.GONE
                         }
                         reject_button.setOnClickListener {
-                            AcceptService.requestLogin(0).enqueue(object : Callback<Accept> {     //Retrofit을 사용해 서버로 요청을 보내고 응답을 처리. (서버에 textId/textPw를 보내고, enqueue로 응답 처리 콜백 정의)
+                            AcceptService.requestLogin("0", roomCode, myCode).enqueue(object : Callback<Accept> {     //Retrofit을 사용해 서버로 요청을 보내고 응답을 처리. (서버에 textId/textPw를 보내고, enqueue로 응답 처리 콜백 정의)
                                 override fun onResponse(
                                     call: Call<Accept>,
                                     response: Response<Accept>
@@ -601,6 +601,7 @@ class Map : Activity() {
         val price: TextView = findViewById(R.id.price)
         val distance: TextView = findViewById(R.id.distance)
         val time: TextView = findViewById(R.id.time)
+        val person = intent.getStringExtra("person") ?: "1"
         if (markerPoints.size >= 2) { // Ensure there are at least two markers for a route
             val tMapData = TMapData()
             val startPoint = markerPoints.first()
@@ -654,12 +655,12 @@ class Map : Activity() {
                         TOT = TOT + polyLine.distance.roundToInt()
 
                         Log.d("정류장 총 거리",TOT.toString())
-                        val Price_num = (TOT / 1000 * 500)
+                        val Price_num = ((TOT / 1000 * 500) / person.toInt())
                         val Distance_num = (TOT / 1000)
-                        val Time_num = TOT
+                        val Time_num = (TOT / 1000 * 60) / 50
 
                         price.setText("$Price_num 원")
-                        distance.setText("$Distance_num m")
+                        distance.setText("$Distance_num km")
                         time.setText("$Time_num 분")
                     }
                 }
