@@ -12,7 +12,6 @@ import android.graphics.PointF
 import android.location.LocationManager
 import android.os.Bundle
 import android.os.Handler
-import android.provider.DocumentsContract.Document
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -38,6 +37,9 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import kotlin.math.roundToInt
+import javax.xml.parsers.DocumentBuilderFactory
+import org.w3c.dom.Element
+
 
 
 
@@ -307,19 +309,19 @@ class Map : Activity() {
                         Log.d("안녕하세요", re_data)
                         re_data_check = re_data
                         Str_to_Tmap(re_data)
-                        calculateRoute(resultPoints)
+                        calculateRoute(resultPoints, markerPoints)
                         placeMultipleMarkers(0, mapView, resultPoints)
 
 
-                        calculateRoute_distance(markerPoints)
-                        Log.d("거리정보1",result_polyline?.distance.toString())
-                        price.setText("${result_polyline?.distance!!.roundToInt()}m")
-
-                        bus_start.add(resultPoints[0])
-                        bus_start.add(markerPoints[0])
-                        calculateRoute_distance(bus_start)
-                        Log.d("거리정보2",result_polyline?.distance.toString())
-                        price_txt.setText("${result_polyline?.distance!!.roundToInt()}m")
+//                        calculateRoute_distance(markerPoints)
+//                        Log.d("거리정보1",result_polyline?.distance.toString())
+//                        price.setText("${result_polyline?.distance!!.roundToInt()}m")
+//
+//                        bus_start.add(resultPoints[0])
+//                        bus_start.add(markerPoints[0])
+//                        calculateRoute_distance(bus_start)
+//                        Log.d("거리정보2",result_polyline?.distance.toString())
+//                        price_txt.setText("${result_polyline?.distance!!.roundToInt()}m")
 
                         check_layout.visibility = VISIBLE
                         accept_button.setOnClickListener {
@@ -498,7 +500,7 @@ class Map : Activity() {
                             } else {
                                 point_count += 1
                             }
-                            calculateRoute(markerPoints)
+                            calculateRoute(markerPoints, markerPoints)
 
                         })
                     }
@@ -604,12 +606,14 @@ class Map : Activity() {
         }
     }
 
-    private fun calculateRoute(markerPoints: List<TMapPoint>) {
+    private fun calculateRoute(markerPoints: List<TMapPoint>, myPoints: List<TMapPoint>) {
         if (markerPoints.size >= 2) { // Ensure there are at least two markers for a route
             val tMapData = TMapData()
 
             val startPoint = markerPoints.first()
             val endPoint = markerPoints.last()
+            val myStartPoint = myPoints.first()
+            val myEndPoint = myPoints.last()
             // If there are more than 2 markers, use the intermediate ones as waypoints
             val waypoints = if (markerPoints.size > 2) markerPoints.subList(
                 1,
@@ -641,17 +645,24 @@ class Map : Activity() {
             ) { polyLine ->
                 if (polyLine != null) {
                     mMapView!!.addTMapPolyLine("Route", polyLine)
-                    var result = tMapData.findPathData(startPoint, endPoint)
-                    result_polyline = polyLine
+                    Log.d("로그용",polyLine.distance.toString())
 
-                } else {
-                    Log.d("Navigation", "Unable to calculate route.")
-                    // Handle the error, such as informing the user that the route could not be calculated.
                 }
             }
-        } else {
-            Log.d("Navigation", "Not enough markers to calculate a route.")
-            // Inform the user that they need to place more markers.
+
+            for (i in 0 until markerPoints.size - 1)
+                tMapData.findPathDataWithType(
+                    TMapData.TMapPathType.CAR_PATH,
+                    markerPoints[i],
+                    markerPoints[i+1],
+                    ArrayList(waypoints),
+                    0
+                ) { polyLine ->
+                    if (polyLine != null) {
+                        Log.d("로그용",polyLine.distance.toString())
+
+                    }
+                }
         }
     }
 
@@ -692,26 +703,6 @@ class Map : Activity() {
             ) { polyLine ->
                 if (polyLine != null) {
                     result_polyline = polyLine
-                    val tmapData = TMapData()
-
-                    tmapData.findPathDataAll(startPoint, endPoint, object : TMapData.FindPathDataAllListenerCallback {
-                        override fun onFindPathDataAll(p0: org.w3c.dom.Document?) {
-                            val pathInfoArray = doc.getJSONObject("result").getJSONArray("pathInfo")
-
-                            for (i in 0 until pathInfoArray.length()) {
-                                val pathInfo = pathInfoArray.getJSONObject(i)
-
-                                val distance = pathInfo.getDouble("distance")
-                                val duration = pathInfo.getDouble("duration")
-
-                                Log.d("PathInfo", "Distance: $distance, Duration: $duration")
-                            }
-                        }
-
-                        override fun onFindPathDataAll(p0: org.w3c.dom.Document?) {
-                            TODO("Not yet implemented")
-                        }
-                    })
 
                 } else {
                     Log.d("Navigation", "Unable to calculate route.")
