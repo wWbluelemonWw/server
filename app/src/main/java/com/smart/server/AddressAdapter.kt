@@ -1,5 +1,6 @@
 package com.smart.server
 
+import android.app.Activity
 import okhttp3.*
 import java.io.IOException
 import android.content.Context
@@ -38,17 +39,18 @@ class AddressAdapter(
             mark_button.setOnClickListener {
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
-//                    // Get the parent activity's root view
-//                    val rootView = (itemView.context as Activity).findViewById<View>(android.R.id.content)
-//                    // Find the address_layout within the activity's root view
-//                    val address_Layout = rootView.findViewById<View>(R.id.address_layout)
-//                    // Set the visibility of address_layout to View.INVISIBLE
-//                    address_Layout.visibility = View.INVISIBLE
                     val profile = profileList[position]
-                    Log.d("지오코딩용",profile.Point.toString())
+                    Log.d("위도/경도 확인",profile.Point.toString())
                     val lat = profile.Point?.latitude ?: 0.0 // 기본값은 0.0
                     val lon = profile.Point?.longitude ?: 0.0 // 기본값은 0.0
                     (context as Map).Map_center(lon, lat)
+
+                    // Get the parent activity's root view
+                    val rootView = (itemView.context as Activity).findViewById<View>(android.R.id.content)
+                    // Find the address_layout within the activity's root view
+                    val address_Layout = rootView.findViewById<View>(R.id.address_layout)
+                    // Set the visibility of address_layout to View.INVISIBLE
+                    address_Layout.visibility = View.INVISIBLE
                 }
             }
         }
