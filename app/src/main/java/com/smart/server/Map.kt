@@ -692,24 +692,24 @@ class Map : Activity() {
             ) { polyLine ->
                 if (polyLine != null) {
                     result_polyline = polyLine
-                    tmapdata.findPathDataAll(startPoint, endPoint, object : TMapData.FindPathDataListenerCallback {
-                        override fun onFindPathDataAll(doc: Document) {
+                    val tmapData = TMapData()
+
+                    tmapData.findPathDataAll(startPoint, endPoint, object : TMapData.FindPathDataAllListenerCallback {
+                        override fun onFindPathDataAll(p0: org.w3c.dom.Document?) {
                             val pathInfoArray = doc.getJSONObject("result").getJSONArray("pathInfo")
 
                             for (i in 0 until pathInfoArray.length()) {
                                 val pathInfo = pathInfoArray.getJSONObject(i)
 
-                                // Extract relevant information from pathInfo object
                                 val distance = pathInfo.getDouble("distance")
                                 val duration = pathInfo.getDouble("duration")
 
-                                // You can also extract other details like coordinates, instructions, etc., as needed
-                                // val coordinates = pathInfo.getJSONArray("coordinates")
-                                // val instructions = pathInfo.getString("instructions")
-
-                                // Process the extracted information as needed
                                 Log.d("PathInfo", "Distance: $distance, Duration: $duration")
                             }
+                        }
+
+                        override fun onFindPathDataAll(p0: org.w3c.dom.Document?) {
+                            TODO("Not yet implemented")
                         }
                     })
 
