@@ -51,8 +51,6 @@ class Map : Activity() {
     private lateinit var address_layout: ConstraintLayout
     private lateinit var check_layout: ConstraintLayout
     private var re_data_check = "체크"
-    private var my_real_markerPoints = mutableListOf<TMapPoint>()
-    private var my_Points = mutableListOf<TMapPoint>()
     private var TOT = 0
 
     private var result_polyline: TMapPolyLine? = null
@@ -300,6 +298,7 @@ class Map : Activity() {
                 OK_member.text = get.OK_count.toString()
                 if (get.wait == "2"){
                     Toast.makeText(this@Map,re_data,Toast.LENGTH_SHORT).show()
+
                 }
                 else if (get.wait == "0" && re_data_check != re_data) {
                     mMapView?.let { mapView ->
@@ -515,8 +514,6 @@ class Map : Activity() {
                                 ) {     //응답값을 response.body로 받아옴
                                     //웹 통신에 성공했을 때 실행. 응답값을 받아옴.
                                     var map = response.body()     //markerPoints
-                                    Str_to_Tmap2(map!!.markerPoints)
-                                    my_real_markerPoints = my_Points
                                     cancelGet()
                                     getCode()
                                 }
@@ -681,20 +678,6 @@ class Map : Activity() {
             val longitude = match.groupValues[2].toDouble()
             val point = TMapPoint(latitude, longitude)
             resultPoints.add(point)
-        }
-    }
-
-    fun Str_to_Tmap2(str: String) {
-        my_Points = mutableListOf()
-        val points_String = str
-        val pattern = "\\(([^,]+),\\s([^)]+)\\)".toRegex()
-        val pointMatches = pattern.findAll(points_String)
-
-        for (match in pointMatches) {
-            val latitude = match.groupValues[1].toDouble()
-            val longitude = match.groupValues[2].toDouble()
-            val point = TMapPoint(latitude, longitude)
-            my_Points.add(point)
         }
     }
 
