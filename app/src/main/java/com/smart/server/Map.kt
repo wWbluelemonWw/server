@@ -60,7 +60,8 @@ class Map : Activity() {
     private lateinit var profileList: ArrayList<Addressfiles>
     private lateinit var adapter: AddressAdapter
     companion object {
-        private const val mApiKey = "NaawXpPLLm3oGRXVIUuuO5rV68T7Ad6yaSUFDjoZ" // SKT
+        private const val mApiKey = "qdxPlTC4Sa1btX0D2LcTt4j3r8eTYsqS7QMhmNLj" // SKT
+//        qdxPlTC4Sa1btX0D2LcTt4j3r8eTYsqS7QMhmNLj
     }
 
     fun resizeBitmap(bitmap: Bitmap, width: Int, height: Int): Bitmap {
@@ -296,6 +297,7 @@ class Map : Activity() {
                 val re_data = get?.data.toString()
                 member.text = get!!.count.toString()
                 OK_member.text = get.OK_count.toString()
+
                 if (get.wait == "2"){
                     Toast.makeText(this@Map,re_data,Toast.LENGTH_SHORT).show()
 
@@ -305,7 +307,6 @@ class Map : Activity() {
                         Log.d("안녕하세요", re_data)
                         re_data_check = re_data
                         Str_to_Tmap(re_data)
-
                         calculateRoute(resultPoints)
 
                         placeMultipleMarkers(0, mapView, resultPoints)
